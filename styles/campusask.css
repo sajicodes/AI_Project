@@ -1,0 +1,534 @@
+/* CampusAsk — University of Central Missouri branded theme */
+
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600;700&family=Figtree:wght@400;500;600;700&display=swap');
+
+:root {
+  --ucm-crimson: #9e1b32;
+  --ucm-maroon: #6e1224;
+  --ucm-maroon-deep: #3d0a14;
+  --ucm-gold: #c9a227;
+  --ucm-gold-soft: #e8d48a;
+  --ucm-ink: #1c1214;
+  --ucm-muted: #5e4a4e;
+  --ucm-panel: #ffffff;
+  --ucm-panel-tint: #fff8f6;
+  --ucm-line: #e8d9dc;
+  --ucm-ok: #1d6b4f;
+  --ucm-warn: #9a6b00;
+  --ucm-err: #9e1b32;
+  --radius-msg: 16px;
+  --shadow-soft: 0 10px 40px rgba(62, 10, 20, 0.08);
+  --font-display: "Cormorant Garamond", "Palatino Linotype", Georgia, serif;
+  --font-body: "Figtree", "Segoe UI", sans-serif;
+  --ucm-quad: url("/*__UCM_QUAD_URI__*/");
+}
+
+html, body, [class*="css"], .stApp, .stMarkdown, p, label, span, div {
+  font-family: var(--font-body) !important;
+  color: var(--ucm-ink);
+}
+
+.stApp {
+  background:
+    radial-gradient(900px 480px at 8% -5%, rgba(158, 27, 50, 0.10) 0%, transparent 55%),
+    radial-gradient(700px 420px at 95% 8%, rgba(201, 162, 39, 0.12) 0%, transparent 50%),
+    linear-gradient(165deg, #fbf6f4 0%, #f3e8ea 42%, #efe6df 100%) !important;
+  background-attachment: fixed;
+}
+
+@keyframes hero-fade-up {
+  from { opacity: 0; transform: translateY(22px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes cta-pulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(201, 162, 39, 0.45); }
+  50% { box-shadow: 0 0 0 12px rgba(201, 162, 39, 0); }
+}
+
+@keyframes soft-rise {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.block-container {
+  padding-top: 1.25rem;
+  padding-bottom: 2.5rem;
+  max-width: 1120px;
+}
+
+/* Hide Streamlit chrome clutter (Deploy / toolbar / broken icon ligatures) */
+[data-testid="stToolbar"],
+[data-testid="stDecoration"],
+[data-testid="stStatusWidget"],
+[data-testid="stHeader"] .stAppDeployButton,
+.stDeployButton,
+#MainMenu,
+header[data-testid="stHeader"] {
+  display: none !important;
+  visibility: hidden !important;
+  height: 0 !important;
+  overflow: hidden !important;
+}
+
+/* Sidebar collapse control leaks "keyboard_…" when Material icon fonts fail */
+[data-testid="stSidebarCollapsedControl"],
+[data-testid="stSidebarCollapseButton"],
+[data-testid="stSidebarHeader"],
+[data-testid="stLogoSpacer"],
+section[data-testid="stSidebar"] [data-testid="stSidebarNav"] {
+  display: none !important;
+  visibility: hidden !important;
+  height: 0 !important;
+  max-height: 0 !important;
+  min-height: 0 !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  overflow: hidden !important;
+  pointer-events: none !important;
+}
+
+section[data-testid="stSidebar"] {
+  overflow: hidden !important;
+}
+
+section[data-testid="stSidebar"] [data-testid="stSidebarUserContent"] {
+  padding-top: 0.85rem !important;
+}
+
+/* Material icon ligature fallback text must never paint */
+[data-testid="stIconMaterial"],
+span[data-testid="stIconMaterial"],
+.material-symbols-rounded,
+[data-testid="stBaseButton-headerNoPadding"] {
+  display: none !important;
+  visibility: hidden !important;
+  color: transparent !important;
+  font-size: 0 !important;
+  line-height: 0 !important;
+  width: 0 !important;
+  height: 0 !important;
+  overflow: hidden !important;
+}
+
+/* ——— Landing: full-bleed campus photo ——— */
+
+.stApp:has(.landing-marker) {
+  background:
+    linear-gradient(
+      105deg,
+      rgba(30, 6, 12, 0.92) 0%,
+      rgba(62, 10, 20, 0.82) 38%,
+      rgba(110, 18, 36, 0.55) 62%,
+      rgba(40, 8, 14, 0.35) 100%
+    ),
+    var(--ucm-quad) !important;
+  background-size: cover !important;
+  background-position: center right !important;
+  background-repeat: no-repeat !important;
+  background-attachment: fixed !important;
+}
+
+.stApp:has(.landing-marker) .block-container {
+  max-width: 100% !important;
+  padding: clamp(2.5rem, 8vw, 5.5rem) clamp(1.5rem, 7vw, 5rem)
+    clamp(2rem, 5vw, 3.5rem) !important;
+  min-height: 100vh;
+  min-height: 100svh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.stApp:has(.landing-marker) header[data-testid="stHeader"] {
+  background: transparent !important;
+}
+
+.stApp:has(.landing-marker) [data-testid="stToolbar"],
+.stApp:has(.landing-marker) [data-testid="stDecoration"] {
+  display: none !important;
+}
+
+.stApp:has(.landing-marker) [data-testid="stSidebar"],
+.stApp:has(.landing-marker) [data-testid="stSidebarCollapsedControl"] {
+  display: none !important;
+}
+
+.landing-stage {
+  position: relative;
+  padding: 0;
+  margin: 0;
+  max-width: 40rem;
+}
+
+.landing-copy {
+  position: relative;
+  z-index: 1;
+}
+
+.landing-logo {
+  display: block;
+  height: clamp(52px, 8vw, 72px);
+  width: auto;
+  max-width: min(100%, 340px);
+  margin: 0 0 1.35rem;
+  object-fit: contain;
+  filter: drop-shadow(0 4px 18px rgba(0, 0, 0, 0.35));
+  /* Keep crest readable on photo: light plate behind logo */
+  background: rgba(255, 255, 255, 0.94);
+  padding: 0.55rem 0.75rem;
+  border-radius: 8px;
+  animation: hero-fade-up 0.85s ease-out both;
+}
+
+.landing-mules {
+  font-family: var(--font-body) !important;
+  font-size: 0.78rem !important;
+  font-weight: 700 !important;
+  letter-spacing: 0.18em !important;
+  text-transform: uppercase !important;
+  color: var(--ucm-gold-soft) !important;
+  -webkit-text-fill-color: var(--ucm-gold-soft) !important;
+  margin: 0 0 0.55rem !important;
+  animation: hero-fade-up 0.85s ease-out 0.06s both;
+}
+
+.landing-product {
+  font-family: var(--font-display) !important;
+  font-size: clamp(2.4rem, 5.5vw, 3.6rem) !important;
+  font-weight: 700 !important;
+  color: #fffaf7 !important;
+  -webkit-text-fill-color: #fffaf7 !important;
+  margin: 0 0 0.85rem !important;
+  letter-spacing: -0.02em;
+  line-height: 1.05 !important;
+  text-shadow: 0 2px 24px rgba(0, 0, 0, 0.35);
+  animation: hero-fade-up 0.85s ease-out 0.14s both;
+}
+
+.landing-headline {
+  font-family: var(--font-body) !important;
+  font-size: clamp(1.12rem, 2.3vw, 1.4rem) !important;
+  font-weight: 600 !important;
+  line-height: 1.4 !important;
+  margin: 0 0 0.7rem !important;
+  max-width: 28rem;
+  color: #ffffff !important;
+  -webkit-text-fill-color: #ffffff !important;
+  animation: hero-fade-up 0.85s ease-out 0.24s both;
+}
+
+.landing-support {
+  font-size: 1.02rem !important;
+  line-height: 1.55 !important;
+  color: rgba(255, 250, 247, 0.88) !important;
+  -webkit-text-fill-color: rgba(255, 250, 247, 0.88) !important;
+  margin: 0 0 1.5rem !important;
+  max-width: 26rem;
+  animation: hero-fade-up 0.85s ease-out 0.34s both;
+}
+
+.landing-footnote {
+  margin-top: 1.25rem !important;
+  font-size: 0.84rem !important;
+  color: rgba(255, 250, 247, 0.62) !important;
+  -webkit-text-fill-color: rgba(255, 250, 247, 0.62) !important;
+  max-width: 26rem;
+  animation: hero-fade-up 0.85s ease-out 0.52s both;
+}
+
+[data-testid="stSidebarNav"] {
+  display: none !important;
+}
+
+.stApp:has(.landing-marker) div.stButton > button {
+  background: var(--ucm-gold) !important;
+  background-color: var(--ucm-gold) !important;
+  color: var(--ucm-maroon-deep) !important;
+  -webkit-text-fill-color: var(--ucm-maroon-deep) !important;
+  border: none !important;
+  font-weight: 700 !important;
+  font-family: var(--font-body) !important;
+  letter-spacing: 0.03em !important;
+  padding: 0.78rem 1.85rem !important;
+  border-radius: 999px !important;
+  animation: cta-pulse 2.8s ease-in-out infinite, hero-fade-up 0.85s ease-out 0.44s both;
+  width: auto !important;
+  min-width: 12rem;
+}
+
+.stApp:has(.landing-marker) div.stButton > button:hover {
+  background: var(--ucm-gold-soft) !important;
+  color: var(--ucm-maroon-deep) !important;
+}
+
+/* ——— Ask experience ——— */
+
+.ask-topbar {
+  display: flex;
+  flex-wrap: nowrap;
+  align-items: center;
+  gap: 1rem 1.25rem;
+  padding: 0.95rem 1.15rem 1.1rem;
+  margin: 0 0 1.25rem;
+  border-radius: 14px;
+  border: 1px solid var(--ucm-line);
+  border-left: 4px solid var(--ucm-crimson);
+  background:
+    linear-gradient(105deg, rgba(158, 27, 50, 0.05) 0%, rgba(255, 255, 255, 0.95) 42%),
+    var(--ucm-panel);
+  box-shadow: var(--shadow-soft);
+}
+
+.ask-logo {
+  flex: 0 0 auto;
+  height: 56px;
+  width: auto;
+  max-width: 220px;
+  object-fit: contain;
+  display: block;
+}
+
+.ask-brand-block .ask-uni {
+  font-size: 0.72rem !important;
+  font-weight: 700 !important;
+  letter-spacing: 0.14em !important;
+  text-transform: uppercase !important;
+  color: var(--ucm-crimson) !important;
+  margin: 0 0 0.2rem !important;
+  font-family: var(--font-body) !important;
+}
+
+.ask-brand-block .ask-title {
+  font-family: var(--font-display) !important;
+  font-size: clamp(1.85rem, 3vw, 2.45rem) !important;
+  font-weight: 700 !important;
+  color: var(--ucm-maroon) !important;
+  margin: 0 !important;
+  line-height: 1.1 !important;
+  letter-spacing: -0.02em;
+}
+
+.ask-brand-block .ask-tag {
+  margin: 0.35rem 0 0 !important;
+  color: var(--ucm-muted) !important;
+  font-size: 0.95rem !important;
+  max-width: 36rem;
+}
+
+.ask-empty {
+  display: flex;
+  align-items: center;
+  gap: 1.35rem 1.75rem;
+  padding: 1.15rem 1.25rem;
+  margin: 0 0 1.5rem;
+  border-radius: 16px;
+  border: 1px solid var(--ucm-line);
+  background:
+    linear-gradient(120deg, rgba(255, 255, 255, 0.96) 0%, rgba(255, 248, 246, 0.9) 100%);
+  box-shadow: var(--shadow-soft);
+  animation: soft-rise 0.7s ease-out both;
+}
+
+.ask-empty-mo {
+  flex: 0 0 auto;
+  width: clamp(120px, 18vw, 168px);
+  height: auto;
+  border-radius: 12px;
+  object-fit: cover;
+  aspect-ratio: 4 / 5;
+  box-shadow: 0 8px 24px rgba(62, 10, 20, 0.12);
+}
+
+.ask-empty-title {
+  font-family: var(--font-display) !important;
+  font-size: 1.55rem !important;
+  font-weight: 700 !important;
+  color: var(--ucm-maroon) !important;
+  margin: 0 0 0.35rem !important;
+}
+
+.ask-empty-text {
+  margin: 0 !important;
+  color: var(--ucm-muted) !important;
+  font-size: 0.98rem !important;
+  line-height: 1.45 !important;
+  max-width: 28rem;
+}
+
+.stChatMessage {
+  background: transparent !important;
+}
+
+div[data-testid="stChatMessageContent"] {
+  background: var(--ucm-panel) !important;
+  border: 1px solid var(--ucm-line) !important;
+  border-radius: var(--radius-msg) !important;
+  padding: 0.9rem 1.05rem !important;
+  box-shadow: var(--shadow-soft);
+}
+
+div[data-testid="stChatMessage"]:has([data-testid="stChatMessageAvatarUser"])
+  div[data-testid="stChatMessageContent"] {
+  background: var(--ucm-panel-tint) !important;
+  border-color: rgba(158, 27, 50, 0.22) !important;
+}
+
+.source-card {
+  background: var(--ucm-panel);
+  border: 1px solid var(--ucm-line);
+  border-left: 3px solid var(--ucm-crimson);
+  border-radius: 10px;
+  padding: 0.9rem 1rem;
+  margin-bottom: 0.7rem;
+  box-shadow: 0 4px 16px rgba(62, 10, 20, 0.04);
+}
+
+.source-card h4 {
+  margin: 0 0 0.3rem !important;
+  font-size: 1rem !important;
+  font-family: var(--font-display) !important;
+  font-weight: 700 !important;
+  color: var(--ucm-maroon) !important;
+}
+
+.source-meta {
+  color: var(--ucm-muted) !important;
+  font-size: 0.84rem !important;
+  margin-bottom: 0.5rem;
+}
+
+.source-meta a {
+  color: var(--ucm-crimson) !important;
+  font-weight: 600 !important;
+  text-decoration: none;
+}
+
+.source-meta a:hover {
+  text-decoration: underline;
+}
+
+.status-ok {
+  color: var(--ucm-ok) !important;
+  font-weight: 700 !important;
+  font-size: 0.88rem !important;
+  margin: 0 0 0.45rem !important;
+}
+
+.status-abstain {
+  color: var(--ucm-warn) !important;
+  font-weight: 700 !important;
+  font-size: 0.88rem !important;
+  margin: 0 0 0.45rem !important;
+}
+
+.status-err {
+  color: var(--ucm-err) !important;
+  font-weight: 700 !important;
+  font-size: 0.88rem !important;
+  margin: 0 0 0.45rem !important;
+}
+
+section[data-testid="stSidebar"] > div {
+  background: linear-gradient(180deg, #fff9f8 0%, #f7ecee 100%) !important;
+}
+
+section[data-testid="stSidebar"] {
+  border-right: 1px solid var(--ucm-line);
+}
+
+.sidebar-lockup {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.65rem;
+  margin: 0.15rem 0 0.35rem;
+}
+
+.sidebar-logo {
+  display: block;
+  width: 100%;
+  max-width: 210px;
+  height: auto;
+  object-fit: contain;
+}
+
+.sidebar-brand {
+  font-family: var(--font-display) !important;
+  font-size: 1.7rem !important;
+  font-weight: 700 !important;
+  color: var(--ucm-maroon) !important;
+  margin: 0.1rem 0 0.2rem !important;
+  line-height: 1.05 !important;
+}
+
+.sidebar-mules {
+  font-size: 0.72rem !important;
+  font-weight: 700 !important;
+  letter-spacing: 0.1em !important;
+  text-transform: uppercase !important;
+  color: var(--ucm-crimson) !important;
+  margin: 0 0 0.4rem !important;
+}
+
+.sidebar-tag {
+  font-size: 0.82rem !important;
+  color: var(--ucm-muted) !important;
+  line-height: 1.4 !important;
+  margin: 0 !important;
+}
+
+div.stButton > button[kind="primary"] {
+  background-color: var(--ucm-crimson) !important;
+  border-color: var(--ucm-crimson) !important;
+  color: #fff !important;
+  font-weight: 600 !important;
+}
+
+div.stButton > button[kind="primary"]:hover {
+  background-color: var(--ucm-maroon) !important;
+  border-color: var(--ucm-maroon) !important;
+}
+
+div.stButton > button[kind="secondary"] {
+  border-color: var(--ucm-line) !important;
+  color: var(--ucm-maroon) !important;
+}
+
+div[data-testid="stChatInput"] {
+  border-color: rgba(158, 27, 50, 0.25) !important;
+}
+
+@media (max-width: 768px) {
+  .stApp:has(.landing-marker) {
+    background-position: 70% center !important;
+  }
+
+  .stApp:has(.landing-marker) .block-container {
+    padding: 2.25rem 1.25rem 2.5rem !important;
+  }
+
+  .landing-logo {
+    max-width: 260px;
+    height: auto;
+  }
+
+  .ask-topbar {
+    padding: 0.75rem 0.85rem 1rem;
+    flex-wrap: wrap;
+  }
+
+  .ask-logo {
+    height: 48px;
+    max-width: 180px;
+  }
+
+  .ask-empty {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .ask-empty-mo {
+    width: 132px;
+  }
+}

@@ -35,7 +35,7 @@ Allowlisted UCM PDF/HTML
 | Chunk / embed / index | `src/chunking.py`, `src/embeddings.py`, `src/vector_store.py` |
 | Retrieve / answer | `src/retrieval.py`, `src/generation.py`, `src/citations.py` |
 | Eval | `src/evaluation.py`, `scripts/run_evaluation.py` |
-| UI | `app.py` |
+| UI | `app.py` (landing), `pages/ask.py`, `src/ui/`, `styles/campusask.css` |
 
 **Model defaults**
 
@@ -46,14 +46,16 @@ Allowlisted UCM PDF/HTML
 
 ```
 AI_Project/
-├── app.py
-├── src/
+├── app.py                 # UCM-branded landing page
+├── pages/ask.py           # grounded Ask / chat experience
+├── styles/campusask.css   # UCM-branded theme
+├── src/                   # RAG pipeline + ui helpers
 ├── scripts/build_index.py
 ├── scripts/run_evaluation.py
-├── data/raw/          # sources.json allowlist + local HTML/PDF
+├── data/raw/              # sources.json allowlist + local HTML/PDF
 ├── data/processed/
-├── data/benchmark/    # 30-Q template + fixture smoke set
-├── indexes/           # FAISS + chunk metadata (built locally)
+├── data/benchmark/        # 30-Q template + fixture smoke set
+├── indexes/               # FAISS + chunk metadata (built locally)
 ├── tests/
 ├── results/
 ├── .env.example
@@ -132,7 +134,9 @@ Rebuild whenever official documents change.
 streamlit run app.py
 ```
 
-Use the sidebar to filter **Undergraduate / Graduate / All**, ask questions, inspect **Sources**, and reset the chat. Unsupported questions should produce a clear abstention message—not a guess.
+The app opens on a **University of Central Missouri** branded landing page. Choose **Ask CampusAsk** to open the grounded Q&A page (`pages/ask.py`).
+
+In Ask mode, use the sidebar to filter **Undergraduate / Graduate / All**, start a **New conversation**, or return **Back to home**. Ask questions, inspect **Sources & evidence**, and expect a clear abstention when the corpus does not support an answer.
 
 ## Tests
 
