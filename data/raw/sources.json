@@ -1,0 +1,65 @@
+{
+  "description": "Allowlisted official UCM public sources for CampusAsk. Verify live editions before production ingest. PDFs require local_path under data/raw/.",
+  "sources": [
+    {
+      "source_id": "ucm_registrar_catalogs",
+      "title": "UCM Registrar — Catalogs",
+      "url": "https://www.ucmo.edu/current-students/office-of-the-registrar-and-student-records/catalogs/",
+      "year": "2025-2026",
+      "level": "all",
+      "content_type": "html",
+      "local_path": "html_cache/ucm_registrar_catalogs.html",
+      "enabled": true
+    },
+    {
+      "source_id": "ucm_registrar_home",
+      "title": "UCM Office of the Registrar and Student Records",
+      "url": "https://www.ucmo.edu/current-students/office-of-the-registrar-and-student-records/",
+      "year": "2025-2026",
+      "level": "all",
+      "content_type": "html",
+      "local_path": "html_cache/ucm_registrar_home.html",
+      "enabled": true
+    },
+    {
+      "source_id": "ucm_catalog_portal",
+      "title": "UCM Academic Catalog Portal",
+      "url": "https://catalog.ucmo.edu/",
+      "year": "2025-2026",
+      "level": "all",
+      "content_type": "html",
+      "local_path": "html_cache/ucm_catalog_portal.html",
+      "enabled": true
+    },
+    {
+      "source_id": "fixture_policy_handbook",
+      "title": "[DEV FIXTURE] Sample Policy Handbook",
+      "url": "https://example.invalid/fixture-handbook",
+      "year": "2024-2025",
+      "level": "all",
+      "content_type": "html",
+      "local_path": "fixtures/sample_handbook.html",
+      "enabled": true
+    },
+    {
+      "source_id": "fixture_ug_catalog",
+      "title": "[DEV FIXTURE] Sample Undergraduate Catalog Excerpt",
+      "url": "https://example.invalid/fixture-ug-catalog",
+      "year": "2024-2025",
+      "level": "undergraduate",
+      "content_type": "html",
+      "local_path": "fixtures/sample_ug_catalog.html",
+      "enabled": true
+    },
+    {
+      "source_id": "fixture_grad_catalog",
+      "title": "[DEV FIXTURE] Sample Graduate Catalog Excerpt",
+      "url": "https://example.invalid/fixture-grad-catalog",
+      "year": "2024-2025",
+      "level": "graduate",
+      "content_type": "html",
+      "local_path": "fixtures/sample_grad_catalog.html",
+      "enabled": true
+    }
+  ]
+}
