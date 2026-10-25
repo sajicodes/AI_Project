@@ -8,7 +8,7 @@ import streamlit as st
 
 from src.config import get_settings
 from src.generation import answer_question
-from src.ui.theme import render_ask_topbar
+from src.ui.theme import render_ask_topbar, render_sidebar_brand
 from src.vector_store import load_store
 
 
@@ -49,14 +49,7 @@ def render_sources(sources: list[dict]) -> None:
 
 def render_ask_sidebar() -> str:
     with st.sidebar:
-        st.markdown(
-            """
-            <p class="sidebar-uni">University of Central Missouri</p>
-            <p class="sidebar-brand">CampusAsk</p>
-            """,
-            unsafe_allow_html=True,
-        )
-        st.caption("Grounded policy Q&A")
+        render_sidebar_brand()
         st.markdown("---")
         level = st.selectbox(
             "Academic level",
@@ -69,22 +62,6 @@ def render_ask_sidebar() -> str:
             st.rerun()
         if st.button("Back to home", use_container_width=True, type="secondary"):
             st.switch_page("app.py")
-        st.markdown("---")
-        st.markdown(
-            """
-            <div class="principle-list">
-              <strong>Principles</strong><br/>
-              • Grounding — retrieved text only<br/>
-              • Citation — document + page/section<br/>
-              • Abstention — no guessing
-            </div>
-            """,
-            unsafe_allow_html=True,
-        )
-        st.caption(
-            "Requires a built FAISS index (`python scripts/build_index.py`) "
-            "and `LLM_API_KEY` in `.env` for answer generation."
-        )
     return level
 
 

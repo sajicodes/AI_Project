@@ -55,6 +55,11 @@ html, body, [class*="css"], .stApp, .stMarkdown, p, label, span, div {
   100% { background-position: 100% 50%; }
 }
 
+@keyframes mule-breathe {
+  from { transform: translate3d(0, 0, 0) scale(1); opacity: 0.88; }
+  to { transform: translate3d(6px, -8px, 0) scale(1.02); opacity: 1; }
+}
+
 .block-container {
   padding-top: 1rem;
   padding-bottom: 2.5rem;
@@ -113,13 +118,71 @@ html, body, [class*="css"], .stApp, .stMarkdown, p, label, span, div {
   position: relative;
   padding: 0;
   margin: 0;
+  display: grid;
+  grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.95fr);
+  align-items: center;
+  gap: clamp(1rem, 4vw, 3rem);
+  min-height: min(72vh, 640px);
+}
+
+.landing-copy {
+  position: relative;
+  z-index: 1;
+  max-width: 36rem;
+}
+
+.landing-mule {
+  position: relative;
+  z-index: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: clamp(220px, 42vh, 460px);
+  pointer-events: none;
+  animation: hero-fade-up 1.1s ease-out 0.2s both;
+}
+
+.landing-mule::before {
+  content: "";
+  position: absolute;
+  width: min(88%, 420px);
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: radial-gradient(
+    circle,
+    rgba(201, 162, 39, 0.28) 0%,
+    rgba(158, 27, 50, 0.08) 45%,
+    transparent 70%
+  );
+  filter: blur(4px);
+}
+
+.mule-hero-svg {
+  position: relative;
+  width: min(100%, 420px);
+  height: auto;
+  color: var(--ucm-gold-soft);
+  filter: drop-shadow(0 18px 40px rgba(20, 8, 10, 0.35));
+  animation: mule-breathe 7s ease-in-out infinite alternate;
+}
+
+.landing-mules {
+  font-family: var(--font-body) !important;
+  font-size: 0.78rem !important;
+  font-weight: 700 !important;
+  letter-spacing: 0.18em !important;
+  text-transform: uppercase !important;
+  color: var(--ucm-gold-soft) !important;
+  -webkit-text-fill-color: var(--ucm-gold-soft) !important;
+  margin: 0 0 0.85rem !important;
+  animation: hero-fade-up 0.85s ease-out 0.02s both;
 }
 
 .landing-gold-rule {
   width: 3.5rem;
   height: 3px;
   border-radius: 2px;
-  margin: 0 0 1.35rem;
+  margin: 0 0 1.1rem;
   background: linear-gradient(90deg, var(--ucm-gold), var(--ucm-gold-soft), transparent);
   background-size: 200% 100%;
   animation: gold-shimmer 4s ease-in-out infinite alternate, hero-fade-up 0.85s ease-out both;
@@ -146,6 +209,7 @@ html, body, [class*="css"], .stApp, .stMarkdown, p, label, span, div {
   font-size: clamp(1.6rem, 3.4vw, 2.25rem) !important;
   font-weight: 600 !important;
   color: var(--ucm-gold-soft) !important;
+  -webkit-text-fill-color: var(--ucm-gold-soft) !important;
   margin: 0 0 1.45rem !important;
   letter-spacing: 0.01em;
   animation: hero-fade-up 0.85s ease-out 0.14s both;
@@ -209,10 +273,10 @@ html, body, [class*="css"], .stApp, .stMarkdown, p, label, span, div {
 
 .ask-topbar {
   display: flex;
-  flex-wrap: wrap;
-  align-items: flex-start;
-  gap: 0.75rem 1.25rem;
-  padding: 0.85rem 1.1rem 1.15rem;
+  flex-wrap: nowrap;
+  align-items: center;
+  gap: 0.95rem 1.15rem;
+  padding: 0.95rem 1.15rem 1.1rem;
   margin: 0 0 1.25rem;
   border-radius: 14px;
   border: 1px solid var(--ucm-line);
@@ -221,6 +285,19 @@ html, body, [class*="css"], .stApp, .stMarkdown, p, label, span, div {
     linear-gradient(105deg, rgba(158, 27, 50, 0.06) 0%, rgba(255, 255, 255, 0.9) 42%),
     var(--ucm-panel);
   box-shadow: var(--shadow-soft);
+}
+
+.ask-mark {
+  flex: 0 0 auto;
+  width: 3.25rem;
+  height: 3.25rem;
+  color: var(--ucm-crimson);
+}
+
+.mule-mark-svg {
+  width: 100%;
+  height: 100%;
+  display: block;
 }
 
 .ask-brand-block .ask-uni {
@@ -332,16 +409,32 @@ section[data-testid="stSidebar"] {
   border-right: 1px solid var(--ucm-line);
 }
 
+.sidebar-lockup {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.7rem;
+  margin: 0.15rem 0 0.35rem;
+}
+
+.sidebar-mark {
+  flex: 0 0 auto;
+  width: 2.6rem;
+  height: 2.6rem;
+  color: var(--ucm-crimson);
+  margin-top: 0.15rem;
+}
+
 .sidebar-brand {
   font-family: var(--font-display) !important;
-  font-size: 1.4rem !important;
+  font-size: 1.55rem !important;
   font-weight: 700 !important;
   color: var(--ucm-maroon) !important;
-  margin: 0.2rem 0 0.15rem !important;
+  margin: 0.1rem 0 0.15rem !important;
+  line-height: 1.1 !important;
 }
 
 .sidebar-uni {
-  font-size: 0.72rem !important;
+  font-size: 0.68rem !important;
   font-weight: 700 !important;
   letter-spacing: 0.1em !important;
   text-transform: uppercase !important;
@@ -349,10 +442,20 @@ section[data-testid="stSidebar"] {
   margin: 0 !important;
 }
 
-.principle-list {
-  font-size: 0.9rem !important;
+.sidebar-mules {
+  font-size: 0.72rem !important;
+  font-weight: 700 !important;
+  letter-spacing: 0.08em !important;
+  text-transform: uppercase !important;
+  color: var(--ucm-gold) !important;
+  margin: 0 0 0.35rem !important;
+}
+
+.sidebar-tag {
+  font-size: 0.82rem !important;
   color: var(--ucm-muted) !important;
-  line-height: 1.55 !important;
+  line-height: 1.4 !important;
+  margin: 0 !important;
 }
 
 div.stButton > button[kind="primary"] {
@@ -377,6 +480,23 @@ div[data-testid="stChatInput"] {
   border-color: rgba(158, 27, 50, 0.25) !important;
 }
 
+@media (max-width: 900px) {
+  .landing-stage {
+    grid-template-columns: 1fr;
+    min-height: auto;
+    gap: 1.5rem;
+  }
+
+  .landing-mule {
+    order: -1;
+    min-height: clamp(160px, 28vh, 260px);
+  }
+
+  .mule-hero-svg {
+    width: min(70%, 280px);
+  }
+}
+
 @media (max-width: 768px) {
   .stApp:has(.landing-marker) .block-container {
     padding: 2.25rem 1.25rem 2.5rem !important;
@@ -384,5 +504,11 @@ div[data-testid="stChatInput"] {
 
   .ask-topbar {
     padding: 0.75rem 0.85rem 1rem;
+    flex-wrap: wrap;
+  }
+
+  .ask-mark {
+    width: 2.75rem;
+    height: 2.75rem;
   }
 }
