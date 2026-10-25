@@ -58,7 +58,7 @@ def render_landing_copy() -> None:
         <div class="landing-stage">
           <div class="landing-copy">
             <img class="landing-logo" src="{logo}" alt="University of Central Missouri" />
-            <p class="landing-mules">Missouri Mules</p>
+            <p class="landing-mules">Academic Catalog Desk</p>
             <p class="landing-product">CampusAsk</p>
             <p class="landing-headline">{CAPTION}</p>
             <p class="landing-support">
@@ -90,7 +90,7 @@ def render_ask_topbar() -> None:
         <div class="ask-topbar">
           <img class="ask-logo" src="{logo}" alt="University of Central Missouri" />
           <div class="ask-brand-block">
-            <p class="ask-uni">Missouri Mules</p>
+            <p class="ask-uni">Academic Catalog Desk</p>
             <p class="ask-title">CampusAsk</p>
             <p class="ask-tag">{CAPTION}</p>
           </div>
@@ -109,7 +109,7 @@ def render_sidebar_brand() -> None:
           <img class="sidebar-logo" src="{logo}" alt="University of Central Missouri" />
           <div>
             <p class="sidebar-brand">CampusAsk</p>
-            <p class="sidebar-mules">Missouri Mules</p>
+            <p class="sidebar-mules">Academic Catalog Desk</p>
             <p class="sidebar-tag">{CAPTION}</p>
           </div>
         </div>
