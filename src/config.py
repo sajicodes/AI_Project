@@ -34,8 +34,10 @@ class Settings:
     evidence_min_score: float = float(os.getenv("EVIDENCE_MIN_SCORE", "0.45"))
 
     llm_api_key: str = os.getenv("LLM_API_KEY", "")
-    llm_base_url: str = os.getenv("LLM_BASE_URL", "https://api.openai.com/v1")
-    llm_model: str = os.getenv("LLM_MODEL", "gpt-4o-mini")
+    llm_base_url: str = os.getenv(
+        "LLM_BASE_URL", "https://api.groq.com/openai/v1"
+    )
+    llm_model: str = os.getenv("LLM_MODEL", "llama-3.3-70b-versatile")
 
     faiss_index_path: Path = PROJECT_ROOT / "indexes" / "campusask.faiss"
     metadata_path: Path = PROJECT_ROOT / "indexes" / "chunks.jsonl"

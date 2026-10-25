@@ -40,7 +40,7 @@ Allowlisted UCM PDF/HTML
 **Model defaults**
 
 - Embeddings: `sentence-transformers/all-MiniLM-L6-v2` (fast, strong baseline; swap via `EMBEDDING_MODEL`)
-- LLM: OpenAI-compatible Chat Completions API (`LLM_MODEL`, default `gpt-4o-mini`); any compatible `LLM_BASE_URL` works
+- LLM: OpenAI-compatible Chat Completions API via Groq by default (`LLM_BASE_URL=https://api.groq.com/openai/v1`, `LLM_MODEL=llama-3.3-70b-versatile`); any compatible base URL/model works
 
 ## Repository layout
 
@@ -73,12 +73,12 @@ pip install -r requirements.txt
 cp .env.example .env
 ```
 
-Edit `.env` and set:
+Edit `.env` and set (Groq defaults match `.env.example`):
 
 ```bash
-LLM_API_KEY=sk-...
-LLM_BASE_URL=https://api.openai.com/v1
-LLM_MODEL=gpt-4o-mini
+LLM_API_KEY=gsk_...
+LLM_BASE_URL=https://api.groq.com/openai/v1
+LLM_MODEL=llama-3.3-70b-versatile
 ```
 
 Retrieval and indexing work without an API key. **Answer generation** requires `LLM_API_KEY`.
@@ -129,7 +129,7 @@ Rebuild whenever official documents change.
 ## Run the app
 
 ```bash
-streamlit run app.py
+STREAMLIT_BROWSER_GATHER_USAGE_STATS=false streamlit run app.py --server.address 0.0.0.0 --server.port 8501 --server.headless true
 ```
 
 Use the sidebar to filter **Undergraduate / Graduate / All**, ask questions, inspect **Sources**, and reset the chat. Unsupported questions should produce a clear abstention message—not a guess.
