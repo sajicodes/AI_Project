@@ -21,5 +21,5 @@ st.set_page_config(
     initial_sidebar_state="expanded",
 )
 
-inject_theme()
+inject_theme(include_hero=False)
 render_ask_experience()

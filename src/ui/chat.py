@@ -12,8 +12,9 @@ from src.ui.theme import render_ask_empty_state, render_ask_topbar, render_sideb
 from src.vector_store import load_store
 
 
-@st.cache_resource(show_spinner="Loading CampusAsk index…")
+@st.cache_resource(show_spinner=False)
 def get_store():
+    """Load FAISS index once per process; caller shows spinner when needed."""
     settings = get_settings()
     return load_store(settings.faiss_index_path, settings.metadata_path), settings
 
@@ -65,27 +66,7 @@ def render_ask_sidebar() -> str:
     return level
 
 
-def render_ask_experience() -> None:
-    """Polished grounded chat UI (RAG behavior unchanged)."""
-    if "messages" not in st.session_state:
-        st.session_state.messages = []
-
-    level = render_ask_sidebar()
-    render_ask_topbar()
-
-    try:
-        store, settings = get_store()
-    except FileNotFoundError as exc:
-        st.error(str(exc))
-        st.stop()
-    except Exception as exc:  # noqa: BLE001
-        st.error("Could not load the CampusAsk index. Rebuild with scripts/build_index.py.")
-        st.caption(str(exc))
-        st.stop()
-
-    if not st.session_state.messages:
-        render_ask_empty_state()
-
+def _render_history() -> None:
     for message in st.session_state.messages:
         with st.chat_message(message["role"]):
             status = message.get("status")
@@ -110,6 +91,21 @@ def render_ask_experience() -> None:
                 with st.expander("Sources & evidence", expanded=False):
                     render_sources(message["sources"])
 
+
+def render_ask_experience() -> None:
+    """Polished grounded chat UI (RAG behavior unchanged; index deferred)."""
+    if "messages" not in st.session_state:
+        st.session_state.messages = []
+
+    # Paint chrome first — do not block on FAISS for empty / history views.
+    level = render_ask_sidebar()
+    render_ask_topbar()
+
+    if not st.session_state.messages:
+        render_ask_empty_state()
+    else:
+        _render_history()
+
     prompt = st.chat_input("Ask a UCM policy question…")
     if not prompt:
         return
@@ -124,7 +120,35 @@ def render_ask_experience() -> None:
         "Graduate": "graduate",
     }
     with st.chat_message("assistant"):
-        with st.spinner("Retrieving evidence and drafting a grounded answer…"):
+        with st.spinner("Loading index and drafting a grounded answer…"):
+            try:
+                store, settings = get_store()
+            except FileNotFoundError as exc:
+                st.error(str(exc))
+                st.session_state.messages.append(
+                    {
+                        "role": "assistant",
+                        "content": str(exc),
+                        "sources": [],
+                        "status": "error",
+                    }
+                )
+                return
+            except Exception as exc:  # noqa: BLE001
+                st.error(
+                    "Could not load the CampusAsk index. Rebuild with scripts/build_index.py."
+                )
+                st.caption(str(exc))
+                st.session_state.messages.append(
+                    {
+                        "role": "assistant",
+                        "content": "Index unavailable.",
+                        "sources": [],
+                        "status": "error",
+                    }
+                )
+                return
+
             result = answer_question(
                 prompt,
                 store=store,
