@@ -20,6 +20,7 @@
   --shadow-soft: 0 10px 40px rgba(62, 10, 20, 0.08);
   --font-display: "Cormorant Garamond", "Palatino Linotype", Georgia, serif;
   --font-body: "Figtree", "Segoe UI", sans-serif;
+  --ucm-quad: url("/*__UCM_QUAD_URI__*/");
 }
 
 html, body, [class*="css"], .stApp, .stMarkdown, p, label, span, div {
@@ -35,11 +36,6 @@ html, body, [class*="css"], .stApp, .stMarkdown, p, label, span, div {
   background-attachment: fixed;
 }
 
-@keyframes bg-drift {
-  from { transform: translate3d(0, 0, 0) scale(1); }
-  to { transform: translate3d(-14px, 12px, 0) scale(1.03); }
-}
-
 @keyframes hero-fade-up {
   from { opacity: 0; transform: translateY(22px); }
   to { opacity: 1; transform: translateY(0); }
@@ -50,14 +46,9 @@ html, body, [class*="css"], .stApp, .stMarkdown, p, label, span, div {
   50% { box-shadow: 0 0 0 12px rgba(201, 162, 39, 0); }
 }
 
-@keyframes gold-shimmer {
-  0% { background-position: 0% 50%; }
-  100% { background-position: 100% 50%; }
-}
-
-@keyframes mule-breathe {
-  from { transform: translate3d(0, 0, 0) scale(1); opacity: 0.88; }
-  to { transform: translate3d(6px, -8px, 0) scale(1.02); opacity: 1; }
+@keyframes soft-rise {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
 .block-container {
@@ -66,33 +57,28 @@ html, body, [class*="css"], .stApp, .stMarkdown, p, label, span, div {
   max-width: 1120px;
 }
 
-/* ——— Landing ——— */
+/* ——— Landing: full-bleed campus photo ——— */
 
 .stApp:has(.landing-marker) {
   background:
-    radial-gradient(ellipse 70% 55% at 78% 35%, rgba(201, 162, 39, 0.28) 0%, transparent 58%),
-    radial-gradient(circle at 12% 78%, rgba(232, 212, 138, 0.12) 0%, transparent 42%),
-    repeating-linear-gradient(
-      -22deg,
-      transparent,
-      transparent 40px,
-      rgba(255, 255, 255, 0.018) 40px,
-      rgba(255, 255, 255, 0.018) 41px
-    ),
     linear-gradient(
-      118deg,
-      #2a0710 0%,
-      #6e1224 36%,
-      #9e1b32 62%,
-      #4a0c18 100%
-    ) !important;
+      105deg,
+      rgba(30, 6, 12, 0.92) 0%,
+      rgba(62, 10, 20, 0.82) 38%,
+      rgba(110, 18, 36, 0.55) 62%,
+      rgba(40, 8, 14, 0.35) 100%
+    ),
+    var(--ucm-quad) !important;
+  background-size: cover !important;
+  background-position: center right !important;
+  background-repeat: no-repeat !important;
   background-attachment: fixed !important;
 }
 
 .stApp:has(.landing-marker) .block-container {
   max-width: 100% !important;
-  padding: clamp(2.75rem, 9vw, 6rem) clamp(1.5rem, 7vw, 5rem)
-    clamp(2rem, 6vw, 4rem) !important;
+  padding: clamp(2.5rem, 8vw, 5.5rem) clamp(1.5rem, 7vw, 5rem)
+    clamp(2rem, 5vw, 3.5rem) !important;
   min-height: 100vh;
   min-height: 100svh;
   display: flex;
@@ -118,52 +104,27 @@ html, body, [class*="css"], .stApp, .stMarkdown, p, label, span, div {
   position: relative;
   padding: 0;
   margin: 0;
-  display: grid;
-  grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.95fr);
-  align-items: center;
-  gap: clamp(1rem, 4vw, 3rem);
-  min-height: min(72vh, 640px);
+  max-width: 40rem;
 }
 
 .landing-copy {
   position: relative;
   z-index: 1;
-  max-width: 36rem;
 }
 
-.landing-mule {
-  position: relative;
-  z-index: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  min-height: clamp(220px, 42vh, 460px);
-  pointer-events: none;
-  animation: hero-fade-up 1.1s ease-out 0.2s both;
-}
-
-.landing-mule::before {
-  content: "";
-  position: absolute;
-  width: min(88%, 420px);
-  aspect-ratio: 1;
-  border-radius: 50%;
-  background: radial-gradient(
-    circle,
-    rgba(201, 162, 39, 0.28) 0%,
-    rgba(158, 27, 50, 0.08) 45%,
-    transparent 70%
-  );
-  filter: blur(4px);
-}
-
-.mule-hero-svg {
-  position: relative;
-  width: min(100%, 420px);
-  height: auto;
-  color: var(--ucm-gold-soft);
-  filter: drop-shadow(0 18px 40px rgba(20, 8, 10, 0.35));
-  animation: mule-breathe 7s ease-in-out infinite alternate;
+.landing-logo {
+  display: block;
+  height: clamp(52px, 8vw, 72px);
+  width: auto;
+  max-width: min(100%, 340px);
+  margin: 0 0 1.35rem;
+  object-fit: contain;
+  filter: drop-shadow(0 4px 18px rgba(0, 0, 0, 0.35));
+  /* Keep crest readable on photo: light plate behind logo */
+  background: rgba(255, 255, 255, 0.94);
+  padding: 0.55rem 0.75rem;
+  border-radius: 8px;
+  animation: hero-fade-up 0.85s ease-out both;
 }
 
 .landing-mules {
@@ -174,62 +135,40 @@ html, body, [class*="css"], .stApp, .stMarkdown, p, label, span, div {
   text-transform: uppercase !important;
   color: var(--ucm-gold-soft) !important;
   -webkit-text-fill-color: var(--ucm-gold-soft) !important;
-  margin: 0 0 0.85rem !important;
-  animation: hero-fade-up 0.85s ease-out 0.02s both;
-}
-
-.landing-gold-rule {
-  width: 3.5rem;
-  height: 3px;
-  border-radius: 2px;
-  margin: 0 0 1.1rem;
-  background: linear-gradient(90deg, var(--ucm-gold), var(--ucm-gold-soft), transparent);
-  background-size: 200% 100%;
-  animation: gold-shimmer 4s ease-in-out infinite alternate, hero-fade-up 0.85s ease-out both;
-}
-
-.landing-brand,
-.landing-stage h1.landing-brand,
-.stApp:has(.landing-marker) h1.landing-brand,
-.stApp:has(.landing-marker) .landing-brand {
-  font-family: var(--font-display) !important;
-  font-size: clamp(2.75rem, 7vw, 4.5rem) !important;
-  font-weight: 700 !important;
-  line-height: 0.95 !important;
-  letter-spacing: -0.02em;
-  margin: 0 0 0.4rem !important;
-  color: #fffaf7 !important;
-  -webkit-text-fill-color: #fffaf7 !important;
-  max-width: 14ch;
+  margin: 0 0 0.55rem !important;
   animation: hero-fade-up 0.85s ease-out 0.06s both;
 }
 
 .landing-product {
   font-family: var(--font-display) !important;
-  font-size: clamp(1.6rem, 3.4vw, 2.25rem) !important;
-  font-weight: 600 !important;
-  color: var(--ucm-gold-soft) !important;
-  -webkit-text-fill-color: var(--ucm-gold-soft) !important;
-  margin: 0 0 1.45rem !important;
-  letter-spacing: 0.01em;
+  font-size: clamp(2.4rem, 5.5vw, 3.6rem) !important;
+  font-weight: 700 !important;
+  color: #fffaf7 !important;
+  -webkit-text-fill-color: #fffaf7 !important;
+  margin: 0 0 0.85rem !important;
+  letter-spacing: -0.02em;
+  line-height: 1.05 !important;
+  text-shadow: 0 2px 24px rgba(0, 0, 0, 0.35);
   animation: hero-fade-up 0.85s ease-out 0.14s both;
 }
 
 .landing-headline {
   font-family: var(--font-body) !important;
-  font-size: clamp(1.15rem, 2.5vw, 1.5rem) !important;
+  font-size: clamp(1.12rem, 2.3vw, 1.4rem) !important;
   font-weight: 600 !important;
-  line-height: 1.35 !important;
-  margin: 0 0 0.8rem !important;
+  line-height: 1.4 !important;
+  margin: 0 0 0.7rem !important;
   max-width: 28rem;
   color: #ffffff !important;
+  -webkit-text-fill-color: #ffffff !important;
   animation: hero-fade-up 0.85s ease-out 0.24s both;
 }
 
 .landing-support {
-  font-size: 1.05rem !important;
+  font-size: 1.02rem !important;
   line-height: 1.55 !important;
   color: rgba(255, 250, 247, 0.88) !important;
+  -webkit-text-fill-color: rgba(255, 250, 247, 0.88) !important;
   margin: 0 0 1.5rem !important;
   max-width: 26rem;
   animation: hero-fade-up 0.85s ease-out 0.34s both;
@@ -238,12 +177,12 @@ html, body, [class*="css"], .stApp, .stMarkdown, p, label, span, div {
 .landing-footnote {
   margin-top: 1.25rem !important;
   font-size: 0.84rem !important;
-  color: rgba(255, 250, 247, 0.58) !important;
+  color: rgba(255, 250, 247, 0.62) !important;
+  -webkit-text-fill-color: rgba(255, 250, 247, 0.62) !important;
   max-width: 26rem;
   animation: hero-fade-up 0.85s ease-out 0.52s both;
 }
 
-/* Hide default multipage nav; we use branded CTA + Back to home */
 [data-testid="stSidebarNav"] {
   display: none !important;
 }
@@ -275,42 +214,37 @@ html, body, [class*="css"], .stApp, .stMarkdown, p, label, span, div {
   display: flex;
   flex-wrap: nowrap;
   align-items: center;
-  gap: 0.95rem 1.15rem;
+  gap: 1rem 1.25rem;
   padding: 0.95rem 1.15rem 1.1rem;
   margin: 0 0 1.25rem;
   border-radius: 14px;
   border: 1px solid var(--ucm-line);
   border-left: 4px solid var(--ucm-crimson);
   background:
-    linear-gradient(105deg, rgba(158, 27, 50, 0.06) 0%, rgba(255, 255, 255, 0.9) 42%),
+    linear-gradient(105deg, rgba(158, 27, 50, 0.05) 0%, rgba(255, 255, 255, 0.95) 42%),
     var(--ucm-panel);
   box-shadow: var(--shadow-soft);
 }
 
-.ask-mark {
+.ask-logo {
   flex: 0 0 auto;
-  width: 3.25rem;
-  height: 3.25rem;
-  color: var(--ucm-crimson);
-}
-
-.mule-mark-svg {
-  width: 100%;
-  height: 100%;
+  height: 56px;
+  width: auto;
+  max-width: 220px;
+  object-fit: contain;
   display: block;
 }
 
 .ask-brand-block .ask-uni {
-  font-size: 0.78rem !important;
+  font-size: 0.72rem !important;
   font-weight: 700 !important;
-  letter-spacing: 0.12em !important;
+  letter-spacing: 0.14em !important;
   text-transform: uppercase !important;
   color: var(--ucm-crimson) !important;
-  margin: 0 0 0.25rem !important;
+  margin: 0 0 0.2rem !important;
   font-family: var(--font-body) !important;
 }
 
-.ask-brand-block h1,
 .ask-brand-block .ask-title {
   font-family: var(--font-display) !important;
   font-size: clamp(1.85rem, 3vw, 2.45rem) !important;
@@ -322,10 +256,50 @@ html, body, [class*="css"], .stApp, .stMarkdown, p, label, span, div {
 }
 
 .ask-brand-block .ask-tag {
-  margin: 0.4rem 0 0 !important;
+  margin: 0.35rem 0 0 !important;
   color: var(--ucm-muted) !important;
   font-size: 0.95rem !important;
   max-width: 36rem;
+}
+
+.ask-empty {
+  display: flex;
+  align-items: center;
+  gap: 1.35rem 1.75rem;
+  padding: 1.15rem 1.25rem;
+  margin: 0 0 1.5rem;
+  border-radius: 16px;
+  border: 1px solid var(--ucm-line);
+  background:
+    linear-gradient(120deg, rgba(255, 255, 255, 0.96) 0%, rgba(255, 248, 246, 0.9) 100%);
+  box-shadow: var(--shadow-soft);
+  animation: soft-rise 0.7s ease-out both;
+}
+
+.ask-empty-mo {
+  flex: 0 0 auto;
+  width: clamp(120px, 18vw, 168px);
+  height: auto;
+  border-radius: 12px;
+  object-fit: cover;
+  aspect-ratio: 4 / 5;
+  box-shadow: 0 8px 24px rgba(62, 10, 20, 0.12);
+}
+
+.ask-empty-title {
+  font-family: var(--font-display) !important;
+  font-size: 1.55rem !important;
+  font-weight: 700 !important;
+  color: var(--ucm-maroon) !important;
+  margin: 0 0 0.35rem !important;
+}
+
+.ask-empty-text {
+  margin: 0 !important;
+  color: var(--ucm-muted) !important;
+  font-size: 0.98rem !important;
+  line-height: 1.45 !important;
+  max-width: 28rem;
 }
 
 .stChatMessage {
@@ -411,44 +385,36 @@ section[data-testid="stSidebar"] {
 
 .sidebar-lockup {
   display: flex;
+  flex-direction: column;
   align-items: flex-start;
-  gap: 0.7rem;
+  gap: 0.65rem;
   margin: 0.15rem 0 0.35rem;
 }
 
-.sidebar-mark {
-  flex: 0 0 auto;
-  width: 2.6rem;
-  height: 2.6rem;
-  color: var(--ucm-crimson);
-  margin-top: 0.15rem;
+.sidebar-logo {
+  display: block;
+  width: 100%;
+  max-width: 210px;
+  height: auto;
+  object-fit: contain;
 }
 
 .sidebar-brand {
   font-family: var(--font-display) !important;
-  font-size: 1.55rem !important;
+  font-size: 1.7rem !important;
   font-weight: 700 !important;
   color: var(--ucm-maroon) !important;
-  margin: 0.1rem 0 0.15rem !important;
-  line-height: 1.1 !important;
-}
-
-.sidebar-uni {
-  font-size: 0.68rem !important;
-  font-weight: 700 !important;
-  letter-spacing: 0.1em !important;
-  text-transform: uppercase !important;
-  color: var(--ucm-crimson) !important;
-  margin: 0 !important;
+  margin: 0.1rem 0 0.2rem !important;
+  line-height: 1.05 !important;
 }
 
 .sidebar-mules {
   font-size: 0.72rem !important;
   font-weight: 700 !important;
-  letter-spacing: 0.08em !important;
+  letter-spacing: 0.1em !important;
   text-transform: uppercase !important;
-  color: var(--ucm-gold) !important;
-  margin: 0 0 0.35rem !important;
+  color: var(--ucm-crimson) !important;
+  margin: 0 0 0.4rem !important;
 }
 
 .sidebar-tag {
@@ -475,31 +441,22 @@ div.stButton > button[kind="secondary"] {
   color: var(--ucm-maroon) !important;
 }
 
-/* Chat input accent */
 div[data-testid="stChatInput"] {
   border-color: rgba(158, 27, 50, 0.25) !important;
 }
 
-@media (max-width: 900px) {
-  .landing-stage {
-    grid-template-columns: 1fr;
-    min-height: auto;
-    gap: 1.5rem;
-  }
-
-  .landing-mule {
-    order: -1;
-    min-height: clamp(160px, 28vh, 260px);
-  }
-
-  .mule-hero-svg {
-    width: min(70%, 280px);
-  }
-}
-
 @media (max-width: 768px) {
+  .stApp:has(.landing-marker) {
+    background-position: 70% center !important;
+  }
+
   .stApp:has(.landing-marker) .block-container {
     padding: 2.25rem 1.25rem 2.5rem !important;
+  }
+
+  .landing-logo {
+    max-width: 260px;
+    height: auto;
   }
 
   .ask-topbar {
@@ -507,8 +464,17 @@ div[data-testid="stChatInput"] {
     flex-wrap: wrap;
   }
 
-  .ask-mark {
-    width: 2.75rem;
-    height: 2.75rem;
+  .ask-logo {
+    height: 48px;
+    max-width: 180px;
+  }
+
+  .ask-empty {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .ask-empty-mo {
+    width: 132px;
   }
 }

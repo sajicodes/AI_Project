@@ -3,6 +3,7 @@
 from src.ui.theme import (
     CAPTION,
     inject_theme,
+    render_ask_empty_state,
     render_ask_topbar,
     render_landing_copy,
     render_landing_footnote,
@@ -15,5 +16,6 @@ __all__ = [
     "render_landing_copy",
     "render_landing_footnote",
     "render_ask_topbar",
+    "render_ask_empty_state",
     "render_sidebar_brand",
 ]
