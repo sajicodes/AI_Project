@@ -64,14 +64,20 @@ def main() -> int:
     store = build_index(vectors, chunks)
     save_store(store, settings.faiss_index_path, settings.metadata_path)
 
+    def _rel(path: Path) -> str:
+        try:
+            return str(path.resolve().relative_to(ROOT))
+        except ValueError:
+            return str(path)
+
     meta = {
         "n_pages": len(usable),
         "n_chunks": len(chunks),
         "chunk_size": settings.chunk_size,
         "chunk_overlap": settings.chunk_overlap,
         "embedding_model": settings.embedding_model,
-        "index_path": str(settings.faiss_index_path),
-        "metadata_path": str(settings.metadata_path),
+        "index_path": _rel(settings.faiss_index_path),
+        "metadata_path": _rel(settings.metadata_path),
     }
     (settings.indexes_dir / "build_meta.json").write_text(
         json.dumps(meta, indent=2), encoding="utf-8"

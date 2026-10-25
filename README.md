@@ -86,7 +86,17 @@ Retrieval and indexing work without an API key. **Answer generation** requires `
 ### Sources
 
 1. Review `data/raw/sources.json` (allowlist only—no full-site crawl).
-2. Place official PDFs under `data/raw/` and set each source’s `local_path`.
+2. Download official catalog PDFs (gitignored; large binaries):
+
+```bash
+python scripts/download_catalogs.py
+```
+
+   Expected paths for the **2026–2027** edition:
+
+   - `data/raw/catalogs/ucm_ug_catalog_2026_2027.pdf`
+   - `data/raw/catalogs/ucm_grad_catalog_2026_2027.pdf`
+
 3. HTML sources use `local_path` when present; otherwise they are fetched and cached under `data/raw/html_cache/`.
 4. Development fixtures under `data/raw/fixtures/` are **synthetic** (`[DEV FIXTURE]`). They exist for pipeline smoke tests and are **not** official UCM policy. Disable them for production demos once real catalogs/handbook PDFs are indexed.
 
@@ -96,9 +106,15 @@ Discovery starting points (verify live editions before ingest):
 - https://www.ucmo.edu/current-students/office-of-the-registrar-and-student-records/catalogs/
 - https://www.ucmo.edu/current-students/office-of-the-registrar-and-student-records/
 
+Official 2026–2027 PDF editions (also listed in `sources.json`):
+
+- Undergraduate: https://catalog.ucmo.edu/mime/media/view/30/1574/2026-2027+Undergraduate+Catalog+071226.pdf
+- Graduate: https://catalog.ucmo.edu/mime/media/view/29/1575/2026-2027+Graduate+Catalog+071226.pdf
+
 ## Build the index
 
 ```bash
+python scripts/download_catalogs.py   # if PDFs are not already under data/raw/catalogs/
 python scripts/build_index.py
 ```
 
