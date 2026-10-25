@@ -1,0 +1,41 @@
+{
+  "description": "Fixture-only smoke questions for local pipeline checks. Not the official UCM 30-Q set and not for reporting proposal metrics.",
+  "questions": [
+    {
+      "id": "F01",
+      "question": "What is the fixture policy for undergraduate grade replacement?",
+      "category": "lookup",
+      "academic_level": "undergraduate",
+      "expected_abstain": false,
+      "gold_answer": "Under the sample handbook fixture, undergraduate students may replace D or F grades; maximum 9 credit hours; request before the last day of classes in the retake term.",
+      "gold_source_ids": ["fixture_policy_handbook"],
+      "gold_pages_or_sections": ["Grade Replacement"],
+      "verified": true,
+      "notes": "Verified against local DEV FIXTURE HTML only."
+    },
+    {
+      "id": "F02",
+      "question": "How many credit hours define full-time graduate enrollment in the fixture catalog?",
+      "category": "lookup",
+      "academic_level": "graduate",
+      "expected_abstain": false,
+      "gold_answer": "9 credit hours in a fall or spring term.",
+      "gold_source_ids": ["fixture_grad_catalog"],
+      "gold_pages_or_sections": ["Graduate Credit Load"],
+      "verified": true,
+      "notes": "Verified against local DEV FIXTURE HTML only."
+    },
+    {
+      "id": "F03",
+      "question": "What is the tuition refund schedule for summer study-abroad trips to Mars?",
+      "category": "unanswerable",
+      "academic_level": "all",
+      "expected_abstain": true,
+      "gold_answer": null,
+      "gold_source_ids": [],
+      "gold_pages_or_sections": [],
+      "verified": true,
+      "notes": "Should abstain; out of corpus."
+    }
+  ]
+}

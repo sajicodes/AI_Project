@@ -1,0 +1,9 @@
+{
+  "n_pages": 32,
+  "n_chunks": 35,
+  "chunk_size": 500,
+  "chunk_overlap": 50,
+  "embedding_model": "sentence-transformers/all-MiniLM-L6-v2",
+  "index_path": "/agent/AI_Project/indexes/campusask.faiss",
+  "metadata_path": "/agent/AI_Project/indexes/chunks.jsonl"
+}
