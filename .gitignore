@@ -35,8 +35,10 @@ indexes/*.bin
 data/processed/*
 !data/processed/.gitkeep
 
-# Official PDF binaries can be large — keep paths local
+# Other raw PDFs stay local; official 2026–2027 catalogs are committed
 data/raw/**/*.pdf
+!data/raw/catalogs/ucm_ug_catalog_2026_2027.pdf
+!data/raw/catalogs/ucm_grad_catalog_2026_2027.pdf
 !data/raw/**/.gitkeep
 
 # Evaluation outputs (regenerate locally)

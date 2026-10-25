@@ -1,5 +1,5 @@
 {
-  "description": "Allowlisted official UCM public sources for CampusAsk. Verify live editions before production ingest. PDFs require local_path under data/raw/ (download via scripts/download_catalogs.py; binaries are gitignored).",
+  "description": "Allowlisted official UCM public sources for CampusAsk. Verify live editions before production ingest. PDFs require local_path under data/raw/. Official 2026–2027 catalogs are Included in repo; use scripts/download_catalogs.py to refresh.",
   "sources": [
     {
       "source_id": "ucm_ug_catalog_2026_2027",
@@ -17,7 +17,7 @@
         "retrieved_from": "https://catalog.ucmo.edu/",
         "registrar_page": "https://www.ucmo.edu/current-students/office-of-the-registrar-and-student-records/catalogs/",
         "download_script": "scripts/download_catalogs.py",
-        "notes": "Official undergraduate catalog PDF; place under data/raw/catalogs/ (gitignored)."
+        "notes": "Official undergraduate catalog PDF; Included in repo under data/raw/catalogs/ (refresh via download script)."
       }
     },
     {
@@ -36,7 +36,7 @@
         "retrieved_from": "https://catalog.ucmo.edu/",
         "registrar_page": "https://www.ucmo.edu/current-students/office-of-the-registrar-and-student-records/catalogs/",
         "download_script": "scripts/download_catalogs.py",
-        "notes": "Official graduate catalog PDF; place under data/raw/catalogs/ (gitignored)."
+        "notes": "Official graduate catalog PDF; Included in repo under data/raw/catalogs/ (refresh via download script)."
       }
     },
     {
