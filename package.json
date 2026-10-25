@@ -1,0 +1,8 @@
+{
+  "name": "ai-project",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "echo CampusAsk env ready"
+  }
+}
