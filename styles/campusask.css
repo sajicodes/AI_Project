@@ -52,9 +52,50 @@ html, body, [class*="css"], .stApp, .stMarkdown, p, label, span, div {
 }
 
 .block-container {
-  padding-top: 1rem;
+  padding-top: 1.25rem;
   padding-bottom: 2.5rem;
   max-width: 1120px;
+}
+
+/* Hide Streamlit chrome clutter (Deploy / toolbar / broken icon ligatures) */
+[data-testid="stToolbar"],
+[data-testid="stDecoration"],
+[data-testid="stStatusWidget"],
+[data-testid="stHeader"] .stAppDeployButton,
+.stDeployButton,
+#MainMenu,
+header[data-testid="stHeader"] {
+  display: none !important;
+  visibility: hidden !important;
+  height: 0 !important;
+  overflow: hidden !important;
+}
+
+/* Sidebar collapse control can leak "keyboard_…" text when icon fonts fail */
+[data-testid="stSidebarCollapsedControl"],
+[data-testid="stSidebarCollapseButton"],
+[data-testid="stSidebarHeader"],
+section[data-testid="stSidebar"] [data-testid="stSidebarNav"] {
+  display: none !important;
+}
+
+section[data-testid="stSidebar"] {
+  overflow-x: hidden !important;
+}
+
+section[data-testid="stSidebar"] > div:first-child {
+  padding-top: 1rem !important;
+}
+
+/* Material icon ligature fallback text must never show */
+[data-testid="stIconMaterial"],
+span[data-testid="stIconMaterial"],
+.material-symbols-rounded {
+  font-size: 0 !important;
+  width: 0 !important;
+  height: 0 !important;
+  overflow: hidden !important;
+  speak: never;
 }
 
 /* ——— Landing: full-bleed campus photo ——— */

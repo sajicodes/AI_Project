@@ -20,7 +20,7 @@ st.set_page_config(
     initial_sidebar_state="collapsed",
 )
 
-inject_theme()
+inject_theme(include_hero=True)
 
 
 def main() -> None:
