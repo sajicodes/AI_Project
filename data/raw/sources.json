@@ -1,11 +1,49 @@
 {
-  "description": "Allowlisted official UCM public sources for CampusAsk. Verify live editions before production ingest. PDFs require local_path under data/raw/.",
+  "description": "Allowlisted official UCM public sources for CampusAsk. Verify live editions before production ingest. PDFs require local_path under data/raw/ (download via scripts/download_catalogs.py; binaries are gitignored).",
   "sources": [
+    {
+      "source_id": "ucm_ug_catalog_2026_2027",
+      "title": "UCM Undergraduate Catalog 2026-2027",
+      "url": "https://catalog.ucmo.edu/mime/media/view/30/1574/2026-2027+Undergraduate+Catalog+071226.pdf",
+      "year": "2026-2027",
+      "level": "undergraduate",
+      "content_type": "pdf",
+      "local_path": "catalogs/ucm_ug_catalog_2026_2027.pdf",
+      "enabled": true,
+      "provenance": {
+        "publisher": "University of Central Missouri",
+        "edition": "2026-2027 Undergraduate Catalog",
+        "document_date": "2026-07-12",
+        "retrieved_from": "https://catalog.ucmo.edu/",
+        "registrar_page": "https://www.ucmo.edu/current-students/office-of-the-registrar-and-student-records/catalogs/",
+        "download_script": "scripts/download_catalogs.py",
+        "notes": "Official undergraduate catalog PDF; place under data/raw/catalogs/ (gitignored)."
+      }
+    },
+    {
+      "source_id": "ucm_grad_catalog_2026_2027",
+      "title": "UCM Graduate Catalog 2026-2027",
+      "url": "https://catalog.ucmo.edu/mime/media/view/29/1575/2026-2027+Graduate+Catalog+071226.pdf",
+      "year": "2026-2027",
+      "level": "graduate",
+      "content_type": "pdf",
+      "local_path": "catalogs/ucm_grad_catalog_2026_2027.pdf",
+      "enabled": true,
+      "provenance": {
+        "publisher": "University of Central Missouri",
+        "edition": "2026-2027 Graduate Catalog",
+        "document_date": "2026-07-12",
+        "retrieved_from": "https://catalog.ucmo.edu/",
+        "registrar_page": "https://www.ucmo.edu/current-students/office-of-the-registrar-and-student-records/catalogs/",
+        "download_script": "scripts/download_catalogs.py",
+        "notes": "Official graduate catalog PDF; place under data/raw/catalogs/ (gitignored)."
+      }
+    },
     {
       "source_id": "ucm_registrar_catalogs",
       "title": "UCM Registrar — Catalogs",
       "url": "https://www.ucmo.edu/current-students/office-of-the-registrar-and-student-records/catalogs/",
-      "year": "2025-2026",
+      "year": "2026-2027",
       "level": "all",
       "content_type": "html",
       "local_path": "html_cache/ucm_registrar_catalogs.html",
@@ -15,7 +53,7 @@
       "source_id": "ucm_registrar_home",
       "title": "UCM Office of the Registrar and Student Records",
       "url": "https://www.ucmo.edu/current-students/office-of-the-registrar-and-student-records/",
-      "year": "2025-2026",
+      "year": "2026-2027",
       "level": "all",
       "content_type": "html",
       "local_path": "html_cache/ucm_registrar_home.html",
@@ -25,7 +63,7 @@
       "source_id": "ucm_catalog_portal",
       "title": "UCM Academic Catalog Portal",
       "url": "https://catalog.ucmo.edu/",
-      "year": "2025-2026",
+      "year": "2026-2027",
       "level": "all",
       "content_type": "html",
       "local_path": "html_cache/ucm_catalog_portal.html",
