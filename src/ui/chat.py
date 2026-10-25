@@ -8,7 +8,7 @@ import streamlit as st
 
 from src.config import get_settings
 from src.generation import answer_question
-from src.ui.theme import render_ask_topbar, render_sidebar_brand
+from src.ui.theme import render_ask_empty_state, render_ask_topbar, render_sidebar_brand
 from src.vector_store import load_store
 
 
@@ -82,6 +82,9 @@ def render_ask_experience() -> None:
         st.error("Could not load the CampusAsk index. Rebuild with scripts/build_index.py.")
         st.caption(str(exc))
         st.stop()
+
+    if not st.session_state.messages:
+        render_ask_empty_state()
 
     for message in st.session_state.messages:
         with st.chat_message(message["role"]):
