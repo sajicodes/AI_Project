@@ -3,6 +3,6 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "dev": "echo CampusAsk env ready"
+    "dev": "node -e \"console.log('CampusAsk env ready'); setInterval(() => {}, 1e9)\""
   }
 }
