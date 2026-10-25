@@ -37,7 +37,7 @@ class Settings:
     llm_base_url: str = os.getenv(
         "LLM_BASE_URL", "https://api.groq.com/openai/v1"
     )
-    llm_model: str = os.getenv("LLM_MODEL", "llama-3.1-8b-instant")
+    llm_model: str = os.getenv("LLM_MODEL", "openai/gpt-oss-20b")
 
     faiss_index_path: Path = PROJECT_ROOT / "indexes" / "campusask.faiss"
     metadata_path: Path = PROJECT_ROOT / "indexes" / "chunks.jsonl"

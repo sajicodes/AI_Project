@@ -40,7 +40,7 @@ Allowlisted UCM PDF/HTML
 **Model defaults**
 
 - Embeddings: `sentence-transformers/all-MiniLM-L6-v2` (fast, strong baseline; swap via `EMBEDDING_MODEL`)
-- LLM: OpenAI-compatible Chat Completions API via Groq free tier by default (`LLM_BASE_URL=https://api.groq.com/openai/v1`, `LLM_MODEL=llama-3.1-8b-instant`); any compatible base URL/model works
+- LLM: OpenAI-compatible Chat Completions API via Groq free tier by default (`LLM_BASE_URL=https://api.groq.com/openai/v1`, `LLM_MODEL=openai/gpt-oss-20b`); any compatible base URL/model works
 
 ## Repository layout
 
@@ -78,7 +78,7 @@ Edit `.env` and set (Groq free-tier defaults match `.env.example`):
 ```bash
 LLM_API_KEY=gsk_...
 LLM_BASE_URL=https://api.groq.com/openai/v1
-LLM_MODEL=llama-3.1-8b-instant
+LLM_MODEL=openai/gpt-oss-20b
 ```
 
 Retrieval and indexing work without an API key. **Answer generation** requires `LLM_API_KEY`.
