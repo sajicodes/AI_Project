@@ -1,0 +1,388 @@
+/* CampusAsk — University of Central Missouri branded theme */
+
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600;700&family=Figtree:wght@400;500;600;700&display=swap');
+
+:root {
+  --ucm-crimson: #9e1b32;
+  --ucm-maroon: #6e1224;
+  --ucm-maroon-deep: #3d0a14;
+  --ucm-gold: #c9a227;
+  --ucm-gold-soft: #e8d48a;
+  --ucm-ink: #1c1214;
+  --ucm-muted: #5e4a4e;
+  --ucm-panel: #ffffff;
+  --ucm-panel-tint: #fff8f6;
+  --ucm-line: #e8d9dc;
+  --ucm-ok: #1d6b4f;
+  --ucm-warn: #9a6b00;
+  --ucm-err: #9e1b32;
+  --radius-msg: 16px;
+  --shadow-soft: 0 10px 40px rgba(62, 10, 20, 0.08);
+  --font-display: "Cormorant Garamond", "Palatino Linotype", Georgia, serif;
+  --font-body: "Figtree", "Segoe UI", sans-serif;
+}
+
+html, body, [class*="css"], .stApp, .stMarkdown, p, label, span, div {
+  font-family: var(--font-body) !important;
+  color: var(--ucm-ink);
+}
+
+.stApp {
+  background:
+    radial-gradient(900px 480px at 8% -5%, rgba(158, 27, 50, 0.10) 0%, transparent 55%),
+    radial-gradient(700px 420px at 95% 8%, rgba(201, 162, 39, 0.12) 0%, transparent 50%),
+    linear-gradient(165deg, #fbf6f4 0%, #f3e8ea 42%, #efe6df 100%) !important;
+  background-attachment: fixed;
+}
+
+@keyframes bg-drift {
+  from { transform: translate3d(0, 0, 0) scale(1); }
+  to { transform: translate3d(-14px, 12px, 0) scale(1.03); }
+}
+
+@keyframes hero-fade-up {
+  from { opacity: 0; transform: translateY(22px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes cta-pulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(201, 162, 39, 0.45); }
+  50% { box-shadow: 0 0 0 12px rgba(201, 162, 39, 0); }
+}
+
+@keyframes gold-shimmer {
+  0% { background-position: 0% 50%; }
+  100% { background-position: 100% 50%; }
+}
+
+.block-container {
+  padding-top: 1rem;
+  padding-bottom: 2.5rem;
+  max-width: 1120px;
+}
+
+/* ——— Landing ——— */
+
+.stApp:has(.landing-marker) {
+  background:
+    radial-gradient(ellipse 70% 55% at 78% 35%, rgba(201, 162, 39, 0.28) 0%, transparent 58%),
+    radial-gradient(circle at 12% 78%, rgba(232, 212, 138, 0.12) 0%, transparent 42%),
+    repeating-linear-gradient(
+      -22deg,
+      transparent,
+      transparent 40px,
+      rgba(255, 255, 255, 0.018) 40px,
+      rgba(255, 255, 255, 0.018) 41px
+    ),
+    linear-gradient(
+      118deg,
+      #2a0710 0%,
+      #6e1224 36%,
+      #9e1b32 62%,
+      #4a0c18 100%
+    ) !important;
+  background-attachment: fixed !important;
+}
+
+.stApp:has(.landing-marker) .block-container {
+  max-width: 100% !important;
+  padding: clamp(2.75rem, 9vw, 6rem) clamp(1.5rem, 7vw, 5rem)
+    clamp(2rem, 6vw, 4rem) !important;
+  min-height: 100vh;
+  min-height: 100svh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.stApp:has(.landing-marker) header[data-testid="stHeader"] {
+  background: transparent !important;
+}
+
+.stApp:has(.landing-marker) [data-testid="stToolbar"],
+.stApp:has(.landing-marker) [data-testid="stDecoration"] {
+  display: none !important;
+}
+
+.stApp:has(.landing-marker) [data-testid="stSidebar"],
+.stApp:has(.landing-marker) [data-testid="stSidebarCollapsedControl"] {
+  display: none !important;
+}
+
+.landing-stage {
+  position: relative;
+  padding: 0;
+  margin: 0;
+}
+
+.landing-gold-rule {
+  width: 3.5rem;
+  height: 3px;
+  border-radius: 2px;
+  margin: 0 0 1.35rem;
+  background: linear-gradient(90deg, var(--ucm-gold), var(--ucm-gold-soft), transparent);
+  background-size: 200% 100%;
+  animation: gold-shimmer 4s ease-in-out infinite alternate, hero-fade-up 0.85s ease-out both;
+}
+
+.landing-brand,
+.landing-stage h1.landing-brand,
+.stApp:has(.landing-marker) h1.landing-brand,
+.stApp:has(.landing-marker) .landing-brand {
+  font-family: var(--font-display) !important;
+  font-size: clamp(2.75rem, 7vw, 4.5rem) !important;
+  font-weight: 700 !important;
+  line-height: 0.95 !important;
+  letter-spacing: -0.02em;
+  margin: 0 0 0.4rem !important;
+  color: #fffaf7 !important;
+  -webkit-text-fill-color: #fffaf7 !important;
+  max-width: 14ch;
+  animation: hero-fade-up 0.85s ease-out 0.06s both;
+}
+
+.landing-product {
+  font-family: var(--font-display) !important;
+  font-size: clamp(1.6rem, 3.4vw, 2.25rem) !important;
+  font-weight: 600 !important;
+  color: var(--ucm-gold-soft) !important;
+  margin: 0 0 1.45rem !important;
+  letter-spacing: 0.01em;
+  animation: hero-fade-up 0.85s ease-out 0.14s both;
+}
+
+.landing-headline {
+  font-family: var(--font-body) !important;
+  font-size: clamp(1.15rem, 2.5vw, 1.5rem) !important;
+  font-weight: 600 !important;
+  line-height: 1.35 !important;
+  margin: 0 0 0.8rem !important;
+  max-width: 28rem;
+  color: #ffffff !important;
+  animation: hero-fade-up 0.85s ease-out 0.24s both;
+}
+
+.landing-support {
+  font-size: 1.05rem !important;
+  line-height: 1.55 !important;
+  color: rgba(255, 250, 247, 0.88) !important;
+  margin: 0 0 1.5rem !important;
+  max-width: 26rem;
+  animation: hero-fade-up 0.85s ease-out 0.34s both;
+}
+
+.landing-footnote {
+  margin-top: 1.25rem !important;
+  font-size: 0.84rem !important;
+  color: rgba(255, 250, 247, 0.58) !important;
+  max-width: 26rem;
+  animation: hero-fade-up 0.85s ease-out 0.52s both;
+}
+
+/* Hide default multipage nav; we use branded CTA + Back to home */
+[data-testid="stSidebarNav"] {
+  display: none !important;
+}
+
+.stApp:has(.landing-marker) div.stButton > button {
+  background: var(--ucm-gold) !important;
+  background-color: var(--ucm-gold) !important;
+  color: var(--ucm-maroon-deep) !important;
+  -webkit-text-fill-color: var(--ucm-maroon-deep) !important;
+  border: none !important;
+  font-weight: 700 !important;
+  font-family: var(--font-body) !important;
+  letter-spacing: 0.03em !important;
+  padding: 0.78rem 1.85rem !important;
+  border-radius: 999px !important;
+  animation: cta-pulse 2.8s ease-in-out infinite, hero-fade-up 0.85s ease-out 0.44s both;
+  width: auto !important;
+  min-width: 12rem;
+}
+
+.stApp:has(.landing-marker) div.stButton > button:hover {
+  background: var(--ucm-gold-soft) !important;
+  color: var(--ucm-maroon-deep) !important;
+}
+
+/* ——— Ask experience ——— */
+
+.ask-topbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  gap: 0.75rem 1.25rem;
+  padding: 0.85rem 1.1rem 1.15rem;
+  margin: 0 0 1.25rem;
+  border-radius: 14px;
+  border: 1px solid var(--ucm-line);
+  border-left: 4px solid var(--ucm-crimson);
+  background:
+    linear-gradient(105deg, rgba(158, 27, 50, 0.06) 0%, rgba(255, 255, 255, 0.9) 42%),
+    var(--ucm-panel);
+  box-shadow: var(--shadow-soft);
+}
+
+.ask-brand-block .ask-uni {
+  font-size: 0.78rem !important;
+  font-weight: 700 !important;
+  letter-spacing: 0.12em !important;
+  text-transform: uppercase !important;
+  color: var(--ucm-crimson) !important;
+  margin: 0 0 0.25rem !important;
+  font-family: var(--font-body) !important;
+}
+
+.ask-brand-block h1,
+.ask-brand-block .ask-title {
+  font-family: var(--font-display) !important;
+  font-size: clamp(1.85rem, 3vw, 2.45rem) !important;
+  font-weight: 700 !important;
+  color: var(--ucm-maroon) !important;
+  margin: 0 !important;
+  line-height: 1.1 !important;
+  letter-spacing: -0.02em;
+}
+
+.ask-brand-block .ask-tag {
+  margin: 0.4rem 0 0 !important;
+  color: var(--ucm-muted) !important;
+  font-size: 0.95rem !important;
+  max-width: 36rem;
+}
+
+.stChatMessage {
+  background: transparent !important;
+}
+
+div[data-testid="stChatMessageContent"] {
+  background: var(--ucm-panel) !important;
+  border: 1px solid var(--ucm-line) !important;
+  border-radius: var(--radius-msg) !important;
+  padding: 0.9rem 1.05rem !important;
+  box-shadow: var(--shadow-soft);
+}
+
+div[data-testid="stChatMessage"]:has([data-testid="stChatMessageAvatarUser"])
+  div[data-testid="stChatMessageContent"] {
+  background: var(--ucm-panel-tint) !important;
+  border-color: rgba(158, 27, 50, 0.22) !important;
+}
+
+.source-card {
+  background: var(--ucm-panel);
+  border: 1px solid var(--ucm-line);
+  border-left: 3px solid var(--ucm-crimson);
+  border-radius: 10px;
+  padding: 0.9rem 1rem;
+  margin-bottom: 0.7rem;
+  box-shadow: 0 4px 16px rgba(62, 10, 20, 0.04);
+}
+
+.source-card h4 {
+  margin: 0 0 0.3rem !important;
+  font-size: 1rem !important;
+  font-family: var(--font-display) !important;
+  font-weight: 700 !important;
+  color: var(--ucm-maroon) !important;
+}
+
+.source-meta {
+  color: var(--ucm-muted) !important;
+  font-size: 0.84rem !important;
+  margin-bottom: 0.5rem;
+}
+
+.source-meta a {
+  color: var(--ucm-crimson) !important;
+  font-weight: 600 !important;
+  text-decoration: none;
+}
+
+.source-meta a:hover {
+  text-decoration: underline;
+}
+
+.status-ok {
+  color: var(--ucm-ok) !important;
+  font-weight: 700 !important;
+  font-size: 0.88rem !important;
+  margin: 0 0 0.45rem !important;
+}
+
+.status-abstain {
+  color: var(--ucm-warn) !important;
+  font-weight: 700 !important;
+  font-size: 0.88rem !important;
+  margin: 0 0 0.45rem !important;
+}
+
+.status-err {
+  color: var(--ucm-err) !important;
+  font-weight: 700 !important;
+  font-size: 0.88rem !important;
+  margin: 0 0 0.45rem !important;
+}
+
+section[data-testid="stSidebar"] > div {
+  background: linear-gradient(180deg, #fff9f8 0%, #f7ecee 100%) !important;
+}
+
+section[data-testid="stSidebar"] {
+  border-right: 1px solid var(--ucm-line);
+}
+
+.sidebar-brand {
+  font-family: var(--font-display) !important;
+  font-size: 1.4rem !important;
+  font-weight: 700 !important;
+  color: var(--ucm-maroon) !important;
+  margin: 0.2rem 0 0.15rem !important;
+}
+
+.sidebar-uni {
+  font-size: 0.72rem !important;
+  font-weight: 700 !important;
+  letter-spacing: 0.1em !important;
+  text-transform: uppercase !important;
+  color: var(--ucm-crimson) !important;
+  margin: 0 !important;
+}
+
+.principle-list {
+  font-size: 0.9rem !important;
+  color: var(--ucm-muted) !important;
+  line-height: 1.55 !important;
+}
+
+div.stButton > button[kind="primary"] {
+  background-color: var(--ucm-crimson) !important;
+  border-color: var(--ucm-crimson) !important;
+  color: #fff !important;
+  font-weight: 600 !important;
+}
+
+div.stButton > button[kind="primary"]:hover {
+  background-color: var(--ucm-maroon) !important;
+  border-color: var(--ucm-maroon) !important;
+}
+
+div.stButton > button[kind="secondary"] {
+  border-color: var(--ucm-line) !important;
+  color: var(--ucm-maroon) !important;
+}
+
+/* Chat input accent */
+div[data-testid="stChatInput"] {
+  border-color: rgba(158, 27, 50, 0.25) !important;
+}
+
+@media (max-width: 768px) {
+  .stApp:has(.landing-marker) .block-container {
+    padding: 2.25rem 1.25rem 2.5rem !important;
+  }
+
+  .ask-topbar {
+    padding: 0.75rem 0.85rem 1rem;
+  }
+}
