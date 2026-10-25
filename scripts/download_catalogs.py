@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
 """Download official UCM catalog PDFs listed in data/raw/sources.json.
 
-PDF binaries are gitignored (see .gitignore). Run this before build_index.py
-when catalogs are missing under data/raw/catalogs/.
+The 2026–2027 undergraduate and graduate catalogs are committed under
+data/raw/catalogs/. Use this script to refresh from the publisher or to
+restore the files if they are missing locally.
 """
 
 from __future__ import annotations
