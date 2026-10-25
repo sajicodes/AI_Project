@@ -43,7 +43,7 @@ class VectorStore:
         fetch_k = min(self.size, max(top_k * 5, top_k) if (level or year) else top_k)
         scores, indices = self.index.search(query_vector, fetch_k)
         hits: list[tuple[Chunk, float]] = []
-        for idx, score in zip(indices[0], scores[0], strict=True):
+        for idx, score in zip(indices[0], scores[0]):
             if idx < 0 or idx >= len(self.chunks):
                 continue
             chunk = self.chunks[idx]
