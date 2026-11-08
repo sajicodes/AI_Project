@@ -29,9 +29,10 @@ class Settings:
         "EMBEDDING_MODEL", "sentence-transformers/all-MiniLM-L6-v2"
     )
     chunk_size: int = int(os.getenv("CHUNK_SIZE", "500"))
-    chunk_overlap: int = int(os.getenv("CHUNK_OVERLAP", "50"))
-    top_k: int = int(os.getenv("TOP_K", "5"))
-    evidence_min_score: float = float(os.getenv("EVIDENCE_MIN_SCORE", "0.45"))
+    chunk_overlap: int = int(os.getenv("CHUNK_OVERLAP", "80"))
+    top_k: int = int(os.getenv("TOP_K", "8"))
+    # Tuned so catalog policy Qs (thesis/GPA) pass while off-topic stays out.
+    evidence_min_score: float = float(os.getenv("EVIDENCE_MIN_SCORE", "0.38"))
 
     llm_api_key: str = os.getenv("LLM_API_KEY", "")
     llm_base_url: str = os.getenv(

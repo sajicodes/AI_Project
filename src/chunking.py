@@ -17,7 +17,12 @@ def approx_token_count(text: str) -> int:
 
 def _stable_chunk_id(source_id: str, page: int | None, section: str | None, ordinal: int, text: str) -> str:
     digest = hashlib.sha1(text.encode("utf-8")).hexdigest()[:10]
-    loc = f"p{page}" if page is not None else f"s{(section or 'body')[:40]}"
+    if page is not None:
+        loc = f"p{page}"
+    else:
+        # Keep IDs citation-safe (no spaces) for [cite:CHUNK_ID] markers.
+        raw = (section or "body")[:40]
+        loc = "s" + re.sub(r"[^A-Za-z0-9._-]+", "_", raw).strip("_")
     return f"{source_id}::{loc}::{ordinal}::{digest}"
 
 
