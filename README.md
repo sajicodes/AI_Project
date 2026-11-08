@@ -19,10 +19,10 @@ This is a **retrieval** system. Documents are a searchable knowledge base, not f
 ```
 Allowlisted UCM PDF/HTML
         → extract + provenance
-        → chunk (~500 tokens, 50 overlap)
+        → chunk (~500 tokens, 80 overlap)
         → Sentence Transformers embeddings
         → FAISS index + metadata map
-        → retrieve top-k (optional UG/Grad filter)
+        → query expand + retrieve top-k (optional UG/Grad filter)
         → evidence gate
         → grounded hosted LLM + citation check
         → Streamlit answer or safe abstention
@@ -64,12 +64,12 @@ AI_Project/
 
 ## Setup
 
-Requires **Python 3.11+**.
+Requires **Python 3.9+** (3.11+ recommended).
 
 ```bash
 git clone https://github.com/sajicodes/AI_Project.git
 cd AI_Project
-python3.11 -m venv .venv
+python3 -m venv .venv
 source .venv/bin/activate   # Windows: .venv\Scripts\activate
 pip install -r requirements.txt
 cp .env.example .env
@@ -136,7 +136,11 @@ streamlit run app.py
 
 The app opens on a **University of Central Missouri** branded landing page. Choose **Ask CampusAsk** to open the grounded Q&A page (`pages/ask.py`).
 
-In Ask mode, use the sidebar to filter **Undergraduate / Graduate / All**, start a **New conversation**, or return **Back to home**. Ask questions, inspect **Sources & evidence**, and expect a clear abstention when the corpus does not support an answer.
+**Student check-in (required):** before the first policy chat, enter **full name** and **UCM ID** (7–9 digits). Identity lives in Streamlit session state only—UCM ID is never sent to the LLM or written to logs. CampusAsk greets you by first name; the sidebar shows your name and a masked ID, with **Switch student** to reset.
+
+In Ask mode, use sample question chips, filter **Undergraduate / Graduate / All**, start a **New conversation**, or return **Back to home**. Ask questions, inspect **Sources & evidence**, and expect a clear abstention when the corpus does not support an answer.
+
+Retrieval defaults: `TOP_K=8`, `EVIDENCE_MIN_SCORE=0.38`, with query expansion for thesis/GPA/probation/credit-hour phrasing.
 
 ## Tests
 
@@ -144,7 +148,7 @@ In Ask mode, use the sidebar to filter **Undergraduate / Graduate / All**, start
 pytest
 ```
 
-Core coverage: HTML/PDF provenance, chunk metadata, FAISS round-trip, citation rejection, evidence-gate abstention, local fixture ingest.
+Core coverage: HTML/PDF provenance, chunk metadata, FAISS round-trip, citation rejection, evidence-gate abstention, identity validation, query expansion, retrieval smoke for thesis/GPA/credit-hour vs off-topic, local fixture ingest.
 
 ## Evaluation
 

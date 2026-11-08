@@ -23,10 +23,12 @@ def _passage(score: float, cid: str = "c1") -> RetrievedPassage:
 
 
 def test_evidence_gate_threshold():
-    assert not evidence_is_sufficient([], min_score=0.45)
-    assert not evidence_is_sufficient([_passage(0.10)], min_score=0.45)
-    assert not evidence_is_sufficient([_passage(0.40)], min_score=0.45)
-    assert evidence_is_sufficient([_passage(0.50)], min_score=0.45)
+    # Default product threshold is 0.38; keep explicit mins so the gate contract is clear.
+    assert not evidence_is_sufficient([], min_score=0.38)
+    assert not evidence_is_sufficient([_passage(0.10)], min_score=0.38)
+    assert not evidence_is_sufficient([_passage(0.37)], min_score=0.38)
+    assert evidence_is_sufficient([_passage(0.38)], min_score=0.38)
+    assert evidence_is_sufficient([_passage(0.50)], min_score=0.38)
 
 
 def test_abstain_when_evidence_weak():
