@@ -97,7 +97,10 @@ def consume_greeting() -> str | None:
     if st.session_state.get(SESSION_GREETED_KEY):
         return None
     st.session_state[SESSION_GREETED_KEY] = True
-    return f"Hi {identity.first_name}, how can CampusAsk help with UCM policy today?"
+    return (
+        f"Hi {identity.first_name}! How can I help with a UCM catalog "
+        f"or policy question today?"
+    )
 
 
 def render_identity_gate() -> bool:

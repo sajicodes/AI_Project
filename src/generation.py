@@ -10,6 +10,7 @@ from typing import Any
 
 from src.citations import format_source_block, validate_citations
 from src.config import Settings, get_settings
+from src.conversation import conversational_reply
 from src.retrieval import RetrievedPassage, load_default_store, retrieve
 from src.vector_store import VectorStore
 
@@ -36,7 +37,7 @@ Answer ONLY using the provided evidence passages. Rules:
 
 @dataclass
 class AnswerResult:
-    status: str  # answered | abstained | error
+    status: str  # answered | abstained | conversational | error
     answer: str
     passages: list[RetrievedPassage] = field(default_factory=list)
     sources: list[dict] = field(default_factory=list)
@@ -44,6 +45,7 @@ class AnswerResult:
     invalid_citation_ids: list[str] = field(default_factory=list)
     max_score: float | None = None
     error: str | None = None
+    intent: str | None = None
 
     def to_dict(self) -> dict[str, Any]:
         return {
@@ -54,6 +56,7 @@ class AnswerResult:
             "invalid_citation_ids": self.invalid_citation_ids,
             "max_score": self.max_score,
             "error": self.error,
+            "intent": self.intent,
             "passage_ids": [p.chunk_id for p in self.passages],
         }
 
@@ -204,8 +207,17 @@ def answer_question(
     top_k: int | None = None,
     academic_level: str = "all",
     year: str | None = None,
+    first_name: str | None = None,
 ) -> AnswerResult:
-    """Unified retrieve → evidence gate → generate → citation validate path."""
+    """Conversational short-circuit, else retrieve → evidence gate → generate."""
+    chat = conversational_reply(question, first_name=first_name)
+    if chat is not None:
+        return AnswerResult(
+            status="conversational",
+            answer=chat.answer,
+            intent=chat.intent,
+        )
+
     settings = settings or get_settings()
     store = store or load_default_store(settings)
     level = None if academic_level.lower() == "all" else academic_level.lower()
