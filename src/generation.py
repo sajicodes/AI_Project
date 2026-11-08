@@ -29,6 +29,8 @@ Answer ONLY using the provided evidence passages. Rules:
 4. If undergraduate and graduate rules differ and the user level is unclear, say so and cite both when present.
 5. Keep answers concise and student-friendly.
 6. Never invent citation IDs that are not in the evidence list.
+7. For thesis vs non-thesis, GPA, probation, or credit-hour questions, synthesize the relevant catalog rules from the evidence rather than abstaining when passages clearly discuss those topics.
+8. Never mention student ID numbers; you will not be given any.
 """
 
 

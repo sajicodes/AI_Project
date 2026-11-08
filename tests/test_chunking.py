@@ -34,6 +34,7 @@ def test_chunk_page_preserves_provenance():
         assert c.section == "Minor Requirements"
         assert c.level == "undergraduate"
         assert c.chunk_id.startswith("fixture_ug_catalog::")
+        assert " " not in c.chunk_id
         assert c.token_estimate <= 40
 
 

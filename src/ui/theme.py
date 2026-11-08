@@ -14,6 +14,24 @@ _UCM = _ROOT / "assets" / "ucm"
 
 CAPTION = "Official UCM policy answers, grounded in the catalogs."
 
+SAMPLE_QUESTIONS = [
+    {
+        "id": "thesis",
+        "label": "Thesis vs non-thesis",
+        "question": "What is the difference between a thesis and non-thesis master's option?",
+    },
+    {
+        "id": "probation",
+        "label": "Academic probation GPA",
+        "question": "What GPA places an undergraduate student on academic probation?",
+    },
+    {
+        "id": "credits",
+        "label": "Full-time credit hours",
+        "question": "How many credit hours are required for full-time graduate enrollment?",
+    },
+]
+
 
 @lru_cache(maxsize=1)
 def _cached_css_shell() -> str:
@@ -132,6 +150,7 @@ def render_ask_empty_state() -> None:
           <div class="ask-empty-copy">
             <p class="ask-empty-title">Ask CampusAsk</p>
             <p class="ask-empty-text">{CAPTION}</p>
+            <p class="ask-empty-hint">Catalog answers with citations—or a clear abstention when evidence is missing.</p>
           </div>
         </div>
         """,
