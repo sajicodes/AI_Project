@@ -92,3 +92,21 @@ def test_offtopic_still_abstains(store_and_settings):
         mocked.assert_not_called()
     assert result.status == "abstained"
     assert result.answer == ABSTAIN_MESSAGE
+
+
+def test_hi_is_polite_named_greeting_not_abstention(store_and_settings):
+    store, settings = store_and_settings
+    with patch("src.generation.retrieve") as mocked_retrieve:
+        with patch("src.generation._call_llm") as mocked_llm:
+            result = answer_question(
+                "HI",
+                store=store,
+                settings=settings,
+                first_name="Sajitha",
+            )
+            mocked_retrieve.assert_not_called()
+            mocked_llm.assert_not_called()
+    assert result.status == "conversational"
+    assert "Sajitha" in result.answer
+    assert result.answer != ABSTAIN_MESSAGE
+    assert not result.sources

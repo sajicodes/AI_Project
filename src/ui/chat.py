@@ -123,13 +123,15 @@ def _render_history() -> None:
                         '<p class="status-ok">Welcome</p>',
                         unsafe_allow_html=True,
                     )
+                elif status == "conversational":
+                    pass  # Natural desk reply — no status chrome
                 elif status == "error":
                     st.markdown(
                         '<p class="status-err">Generation error</p>',
                         unsafe_allow_html=True,
                     )
             st.markdown(message["content"])
-            if message.get("sources"):
+            if message.get("sources") and message.get("status") != "conversational":
                 with st.expander("Sources & evidence", expanded=False):
                     render_sources(message["sources"])
 
@@ -164,81 +166,100 @@ def _render_sample_chips() -> str | None:
 
 
 def _answer_prompt(prompt: str, academic_level: str) -> None:
+    from src.conversation import classify_conversational_intent
+
     st.session_state.messages.append({"role": "user", "content": prompt})
     with st.chat_message("user"):
         st.markdown(prompt)
 
-    with st.chat_message("assistant"):
-        with st.spinner("Searching catalogs and drafting a grounded answer…"):
-            try:
-                store, settings = get_store()
-            except FileNotFoundError as exc:
-                st.error(str(exc))
-                st.session_state.messages.append(
-                    {
-                        "role": "assistant",
-                        "content": str(exc),
-                        "sources": [],
-                        "status": "error",
-                    }
-                )
-                return
-            except Exception as exc:  # noqa: BLE001
-                logger.exception("Index load failed")
-                st.error(
-                    "Could not load the CampusAsk index. Rebuild with scripts/build_index.py."
-                )
-                st.caption("Index unavailable.")
-                st.session_state.messages.append(
-                    {
-                        "role": "assistant",
-                        "content": "Index unavailable.",
-                        "sources": [],
-                        "status": "error",
-                    }
-                )
-                return
+    identity = get_identity()
+    first_name = identity.first_name if identity else None
+    is_chitchat = classify_conversational_intent(prompt) is not None
 
-            # Never pass UCM ID into generation / logs.
+    with st.chat_message("assistant"):
+        if is_chitchat:
+            # Never load the index or show Sources for greetings/thanks/etc.
             result = answer_question(
                 prompt,
-                store=store,
-                settings=settings,
                 academic_level=academic_level,
+                first_name=first_name,
             )
-
-        if result.status == "answered":
-            st.markdown(
-                '<p class="status-ok">Grounded answer</p>',
-                unsafe_allow_html=True,
-            )
-        elif result.status == "abstained":
-            st.markdown(
-                '<p class="status-abstain">Abstention — evidence insufficient</p>',
-                unsafe_allow_html=True,
-            )
+            st.markdown(result.answer)
         else:
-            st.markdown(
-                '<p class="status-err">Generation error</p>',
-                unsafe_allow_html=True,
-            )
+            with st.spinner("Searching catalogs and drafting a grounded answer…"):
+                try:
+                    store, settings = get_store()
+                except FileNotFoundError as exc:
+                    st.error(str(exc))
+                    st.session_state.messages.append(
+                        {
+                            "role": "assistant",
+                            "content": str(exc),
+                            "sources": [],
+                            "status": "error",
+                        }
+                    )
+                    return
+                except Exception:  # noqa: BLE001
+                    logger.exception("Index load failed")
+                    st.error(
+                        "Could not load the CampusAsk index. Rebuild with scripts/build_index.py."
+                    )
+                    st.caption("Index unavailable.")
+                    st.session_state.messages.append(
+                        {
+                            "role": "assistant",
+                            "content": "Index unavailable.",
+                            "sources": [],
+                            "status": "error",
+                        }
+                    )
+                    return
 
-        st.markdown(result.answer)
-        with st.expander("Sources & evidence", expanded=result.status == "answered"):
-            render_sources(result.sources)
-            if result.cited_ids:
-                st.caption("Cited chunk IDs: " + ", ".join(result.cited_ids))
-            if result.invalid_citation_ids:
-                st.caption(
-                    "Removed invalid citation IDs: "
-                    + ", ".join(result.invalid_citation_ids)
+                # Never pass UCM ID into generation / logs — first name only.
+                result = answer_question(
+                    prompt,
+                    store=store,
+                    settings=settings,
+                    academic_level=academic_level,
+                    first_name=first_name,
                 )
+
+            if result.status == "answered":
+                st.markdown(
+                    '<p class="status-ok">Grounded answer</p>',
+                    unsafe_allow_html=True,
+                )
+            elif result.status == "abstained":
+                st.markdown(
+                    '<p class="status-abstain">Abstention — evidence insufficient</p>',
+                    unsafe_allow_html=True,
+                )
+            elif result.status == "error":
+                st.markdown(
+                    '<p class="status-err">Generation error</p>',
+                    unsafe_allow_html=True,
+                )
+
+            st.markdown(result.answer)
+            if result.status != "conversational":
+                with st.expander(
+                    "Sources & evidence", expanded=result.status == "answered"
+                ):
+                    render_sources(result.sources)
+                    if result.cited_ids:
+                        st.caption("Cited chunk IDs: " + ", ".join(result.cited_ids))
+                    if result.invalid_citation_ids:
+                        st.caption(
+                            "Removed invalid citation IDs: "
+                            + ", ".join(result.invalid_citation_ids)
+                        )
 
     st.session_state.messages.append(
         {
             "role": "assistant",
             "content": result.answer,
-            "sources": result.sources,
+            "sources": [] if result.status == "conversational" else result.sources,
             "status": result.status,
         }
     )
