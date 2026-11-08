@@ -2,7 +2,7 @@
   "n_pages": 1049,
   "n_chunks": 1397,
   "chunk_size": 500,
-  "chunk_overlap": 50,
+  "chunk_overlap": 80,
   "embedding_model": "sentence-transformers/all-MiniLM-L6-v2",
   "index_path": "indexes/campusask.faiss",
   "metadata_path": "indexes/chunks.jsonl",
