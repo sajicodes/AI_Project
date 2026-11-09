@@ -35,6 +35,7 @@ Allowlisted UCM PDF/HTML
 | Chunk / embed / index | `src/chunking.py`, `src/embeddings.py`, `src/vector_store.py` |
 | Retrieve / answer | `src/retrieval.py`, `src/generation.py`, `src/citations.py` |
 | Conversation / identity | `src/conversation.py`, `src/identity.py` |
+| Check-in login logs | `src/firestore_logs.py` (optional Firebase / Firestore) |
 | HTTP API | `api/main.py` (FastAPI) |
 | Product UI | `web/` (Next.js App Router) |
 | Eval | `src/evaluation.py`, `scripts/run_evaluation.py` |
@@ -159,7 +160,33 @@ npm run dev
 
 The UI opens on a **University of Central Missouri** branded landing page. Choose **Ask CampusAsk** for grounded Q&A.
 
-**Student check-in (required):** before the first policy chat, enter **full name** and **UCM ID** (9 digits starting with `700`, e.g. `700782694`). Identity lives in browser `sessionStorage` only—UCM ID is never sent to the LLM or written to API logs. CampusAsk greets you by first name; the sidebar shows your name and a masked ID, with **Switch student** to reset.
+**Student check-in (required):** before the first policy chat, enter **full name** and **UCM ID** (9 digits starting with `700`, e.g. `700782694`). The browser keeps a masked ID in `sessionStorage`; UCM ID is never sent to the LLM. When Firebase is configured on the API host, each successful check-in is written to a Firestore `login_logs` collection (name, UCM ID, timestamp, optional academic level / user agent). CampusAsk greets you by first name; the sidebar shows your name and a masked ID, with **Switch student** to reset.
+
+### Firebase login logs (optional)
+
+Firestore stores **check-in / login logs** only (not the FAISS vector index). You must create a Firebase project before this works.
+
+1. In [Firebase Console](https://console.firebase.google.com/), create a project and enable **Cloud Firestore**.
+2. Project settings → **Service accounts** → generate a new private key (JSON). Keep the file local — never commit it.
+3. Add to root `.env` (see `.env.example`):
+
+```bash
+FIREBASE_ENABLED=true
+FIREBASE_PROJECT_ID=your-firebase-project-id
+FIREBASE_CREDENTIALS_PATH=/absolute/path/to/serviceAccount.json
+# Hosted API alternative (Railway/Render secret):
+# FIREBASE_CREDENTIALS_JSON={"type":"service_account",...}
+CAMPUSASK_ADMIN_TOKEN=change-me-for-local-demo
+```
+
+4. Seed ~10 dummy students (and optional sample logs):
+
+```bash
+python scripts/seed_firestore.py --with-login-logs
+```
+
+5. Successful check-ins from the Next.js Ask UI call `POST /v1/identity/validate`, which appends a `login_logs` document when Firebase is configured.
+6. Demo-only recent logs: `GET /v1/admin/login-logs` with header `X-Admin-Token: <CAMPUSASK_ADMIN_TOKEN>` (disabled with 503 until the token env is set).
 
 In Ask mode, use sample question chips, filter **Undergraduate / Graduate / All**, start a **New conversation**, or return **Back to home**. Ask questions, inspect **Sources & evidence** beside answers, and expect a clear abstention when the corpus does not support an answer. Polite greetings / thanks never abstain.
 
@@ -186,6 +213,9 @@ streamlit run app.py
 | `LLM_MODEL` | No | Default `openai/gpt-oss-20b` |
 | `CORS_ORIGINS` | Yes in prod | Your Vercel origin, e.g. `https://campusask.vercel.app` |
 | `TOP_K` / `EVIDENCE_MIN_SCORE` | No | Retrieval tuning |
+| `FIREBASE_PROJECT_ID` | For login logs | Firebase project id |
+| `FIREBASE_CREDENTIALS_JSON` or `FIREBASE_CREDENTIALS_PATH` | For login logs | Service account (never commit the JSON file) |
+| `CAMPUSASK_ADMIN_TOKEN` | Optional | Protects `GET /v1/admin/login-logs` |
 
 4. Health check: `GET /health`
 5. Copy the public API URL (e.g. `https://campusask-api.up.railway.app`)
@@ -216,7 +246,7 @@ If you prefer one platform for the demo day, run the API on Railway and the Next
 pytest
 ```
 
-Core coverage: HTML/PDF provenance, chunk metadata, FAISS round-trip, citation rejection, evidence-gate abstention, identity validation, query expansion, retrieval smoke for thesis/GPA/credit-hour vs off-topic, conversational greetings, FastAPI health/identity/greeting smoke, local fixture ingest.
+Core coverage: HTML/PDF provenance, chunk metadata, FAISS round-trip, citation rejection, evidence-gate abstention, identity validation, query expansion, retrieval smoke for thesis/GPA/credit-hour vs off-topic, conversational greetings, FastAPI health/identity/greeting smoke, Firestore check-in log hooks (mocked), local fixture ingest.
 
 ```bash
 cd web && npm run build

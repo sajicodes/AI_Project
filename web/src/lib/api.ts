@@ -92,11 +92,18 @@ async function parseJson<T>(res: Response): Promise<T> {
 export async function validateIdentity(
   fullName: string,
   ucmId: string,
+  options?: { academicLevel?: AcademicLevel },
 ): Promise<IdentityResponse> {
   const res = await fetch(`${apiBase()}/v1/identity/validate`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ full_name: fullName, ucm_id: ucmId }),
+    body: JSON.stringify({
+      full_name: fullName,
+      ucm_id: ucmId,
+      academic_level: options?.academicLevel,
+      user_agent:
+        typeof navigator !== "undefined" ? navigator.userAgent : undefined,
+    }),
   });
   return parseJson<IdentityResponse>(res);
 }

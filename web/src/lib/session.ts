@@ -1,4 +1,4 @@
-/** Browser-session student identity. UCM ID never leaves the browser for LLM calls. */
+/** Browser-session student identity. Full UCM ID is not kept here or sent to the LLM. */
 
 import type { AcademicLevel } from "@/lib/api";
 

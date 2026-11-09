@@ -1,7 +1,9 @@
 """Student identity validation (session UX only).
 
-UCM ID is never sent to the LLM, never logged, and never persisted
-beyond the client session (Streamlit session_state or browser storage).
+UCM ID is never sent to the LLM. The Next.js client keeps a masked ID in
+browser sessionStorage; the FastAPI check-in endpoint may write name + UCM ID
+to Firestore login logs when Firebase is configured (server-side only).
+Application logs still avoid echoing the full ID.
 """
 
 from __future__ import annotations

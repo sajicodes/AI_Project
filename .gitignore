@@ -5,6 +5,12 @@ web/.env
 web/.env.local
 *.pem
 
+# Firebase / Google service-account keys (never commit)
+*firebase-adminsdk*.json
+firebase-service-account.json
+serviceAccount*.json
+**/service-account*.json
+
 # Node / Next.js
 node_modules/
 web/node_modules/
