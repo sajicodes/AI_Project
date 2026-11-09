@@ -105,9 +105,9 @@ def render_identity_gate() -> bool:
         )
         ucm_id = st.text_input(
             "UCM ID number",
-            placeholder="7–9 digits",
+            placeholder="e.g. 700782694",
             max_chars=12,
-            help="Digits only. Stored in session state for this visit—not logged or sent to the LLM.",
+            help="Nine digits starting with 700. Stored in session state for this visit—not logged or sent to the LLM.",
         )
         submitted = st.form_submit_button(
             "Continue to CampusAsk", type="primary", use_container_width=True

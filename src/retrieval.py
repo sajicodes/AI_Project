@@ -13,6 +13,9 @@ from src.vector_store import VectorStore, load_store
 # Soft lexical boost when catalog phrasing matches expanded policy terms.
 _LEXICAL_BONUS = 0.06
 _LEXICAL_BONUS_CAP = 0.12
+# Extra ranking help for thesis vs non-thesis Grad Catalog policy pages.
+_THESIS_PAIR_BONUS = 0.10
+_THESIS_POLICY_BONUS = 0.06
 
 
 @dataclass
@@ -32,6 +35,17 @@ class RetrievedPassage:
         return "Location unavailable"
 
 
+def is_dev_fixture(chunk: Chunk) -> bool:
+    """True for synthetic [DEV FIXTURE] / fixture_* corpus chunks."""
+    title = chunk.title or ""
+    source_id = chunk.source_id or ""
+    if "[DEV FIXTURE]" in title:
+        return True
+    if source_id.startswith("fixture_"):
+        return True
+    return False
+
+
 def _apply_lexical_boost(
     hits: list[tuple[Chunk, float]],
     terms: list[str],
@@ -47,6 +61,64 @@ def _apply_lexical_boost(
                 bonus += _LEXICAL_BONUS
         if bonus:
             bonus = min(bonus, _LEXICAL_BONUS_CAP)
+        boosted.append((chunk, float(score) + bonus))
+    boosted.sort(key=lambda item: item[1], reverse=True)
+    return boosted
+
+
+def _is_thesis_query(query: str) -> bool:
+    q = (query or "").lower()
+    if "thesis" not in q:
+        return False
+    return any(
+        cue in q
+        for cue in (
+            "non-thesis",
+            "non thesis",
+            "nonthesis",
+            "master",
+            "masters",
+            "master's",
+            "graduate",
+            "option",
+            "vs",
+            "versus",
+            "difference",
+        )
+    )
+
+
+def _apply_thesis_boost(
+    hits: list[tuple[Chunk, float]],
+    query: str,
+) -> list[tuple[Chunk, float]]:
+    """Prefer Grad Catalog passages that discuss thesis and non-thesis together."""
+    if not hits or not _is_thesis_query(query):
+        return hits
+    boosted: list[tuple[Chunk, float]] = []
+    for chunk, score in hits:
+        text = (chunk.text or "").lower()
+        bonus = 0.0
+        has_thesis = "thesis" in text
+        has_non = (
+            "non-thesis" in text
+            or "non thesis" in text
+            or "nonthesis" in text
+            or "non–thesis" in text
+        )
+        if has_thesis and has_non:
+            bonus += _THESIS_PAIR_BONUS
+        elif has_thesis and any(
+            cue in text
+            for cue in (
+                "thesis option",
+                "choose thesis",
+                "culminating experience",
+                "thesis area",
+                "non-thesis area",
+            )
+        ):
+            bonus += _THESIS_POLICY_BONUS
         boosted.append((chunk, float(score) + bonus))
     boosted.sort(key=lambda item: item[1], reverse=True)
     return boosted
@@ -76,8 +148,13 @@ def retrieve(
     level: str | None = None,
     year: str | None = None,
     expand: bool = True,
+    include_dev_fixtures: bool = False,
 ) -> list[RetrievedPassage]:
-    """Retrieve top-k passages with optional query expansion and soft level hints."""
+    """Retrieve top-k passages with optional query expansion and soft level hints.
+
+    Production retrieval excludes ``[DEV FIXTURE]`` / ``fixture_*`` chunks unless
+    ``include_dev_fixtures`` is explicitly enabled (tests only).
+    """
     settings = settings or get_settings()
     k = top_k if top_k is not None else settings.top_k
     if not (query or "").strip():
@@ -116,7 +193,11 @@ def retrieve(
             )
         merged = _merge_hits(retry_buckets)
 
-    merged = _apply_lexical_boost(merged, terms)[:k]
+    if not include_dev_fixtures:
+        merged = [(c, s) for c, s in merged if not is_dev_fixture(c)]
+
+    merged = _apply_lexical_boost(merged, terms)
+    merged = _apply_thesis_boost(merged, query)[:k]
     return [RetrievedPassage(chunk=c, score=s) for c, s in merged]
 
 

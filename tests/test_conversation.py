@@ -19,6 +19,21 @@ def test_classify_thanks_goodbye_help():
     assert classify_conversational_intent("how are you") == "how_are_you"
 
 
+def test_classify_expanded_smalltalk():
+    for text in (
+        "Hi how are you",
+        "hi, how are you?",
+        "Hey what's up",
+        "what's up",
+        "whats up",
+        "how's it going",
+        "How is it going?",
+        "sup",
+        "yo what's up",
+    ):
+        assert classify_conversational_intent(text) == "how_are_you", text
+
+
 def test_policy_questions_are_not_conversational():
     for text in (
         "What GPA places a student on academic probation?",
@@ -38,6 +53,14 @@ def test_named_greeting_reply():
     assert ABSTAIN_MESSAGE not in reply.answer
 
 
+def test_hi_how_are_you_named_reply_never_abstains():
+    reply = conversational_reply("Hi how are you", first_name="Sajitha")
+    assert reply is not None
+    assert reply.intent == "how_are_you"
+    assert "Sajitha" in reply.answer
+    assert ABSTAIN_MESSAGE not in reply.answer
+
+
 def test_hi_answer_question_never_abstains_or_retrieves():
     with patch("src.generation.retrieve") as mocked_retrieve:
         with patch("src.generation.load_default_store") as mocked_store:
@@ -49,6 +72,17 @@ def test_hi_answer_question_never_abstains_or_retrieves():
     assert "Sajitha" in result.answer
     assert result.sources == []
     assert result.answer != ABSTAIN_MESSAGE
+
+
+def test_hi_how_are_you_answer_question_short_circuits():
+    with patch("src.generation.retrieve") as mocked_retrieve:
+        with patch("src.generation.load_default_store") as mocked_store:
+            result = answer_question("Hi how are you", first_name="Alex")
+            mocked_retrieve.assert_not_called()
+            mocked_store.assert_not_called()
+    assert result.status == "conversational"
+    assert result.intent == "how_are_you"
+    assert "Alex" in result.answer
 
 
 def test_thanks_answer_question_is_conversational():

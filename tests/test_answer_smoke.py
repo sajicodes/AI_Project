@@ -48,8 +48,11 @@ def test_thesis_question_yields_cited_answer(store_and_settings):
     assert result.status == "answered"
     assert result.cited_ids
     assert result.sources
-    assert "[cite:" not in result.answer or True  # cleaned answer may keep or drop marks
+    assert "[cite:" not in result.answer
     assert "thesis" in result.answer.lower()
+    for src in result.sources:
+        assert "[DEV FIXTURE]" not in (src.get("title") or "")
+        assert not str(src.get("chunk_id") or "").startswith("fixture_")
 
 
 def test_gpa_probation_question_yields_cited_answer(store_and_settings):

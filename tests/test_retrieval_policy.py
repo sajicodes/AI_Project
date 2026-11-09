@@ -37,6 +37,28 @@ def test_thesis_non_thesis_passes_evidence_gate(store_and_settings):
     assert evidence_is_sufficient(passages, min_score=settings.evidence_min_score)
     blob = " ".join(p.chunk.text.lower() for p in passages)
     assert "thesis" in blob
+    # Prefer Grad Catalog general thesis / non-thesis policy language.
+    assert any(
+        ("non-thesis" in p.chunk.text.lower() or "non thesis" in p.chunk.text.lower())
+        or "thesis option" in p.chunk.text.lower()
+        or "choose thesis" in p.chunk.text.lower()
+        for p in passages
+    )
+
+
+def test_production_retrieve_excludes_dev_fixtures(store_and_settings):
+    store, settings = store_and_settings
+    passages = retrieve(
+        "What is the grade replacement policy for undergraduate students?",
+        store,
+        settings=settings,
+        level="undergraduate",
+        top_k=12,
+    )
+    assert passages
+    for p in passages:
+        assert "[DEV FIXTURE]" not in (p.chunk.title or "")
+        assert not (p.chunk.source_id or "").startswith("fixture_")
 
 
 def test_probation_gpa_passes_evidence_gate(store_and_settings):
