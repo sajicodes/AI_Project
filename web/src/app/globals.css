@@ -38,6 +38,7 @@ body {
     radial-gradient(700px 420px at 95% 8%, rgba(201, 162, 39, 0.12) 0%, transparent 50%),
     linear-gradient(165deg, #fbf6f4 0%, #f3e8ea 42%, #efe6df 100%);
   background-attachment: fixed;
+  overflow-x: clip;
 }
 
 a {

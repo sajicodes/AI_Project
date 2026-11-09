@@ -97,6 +97,7 @@ export default function AskClient() {
   const [ucmId, setUcmId] = useState("");
   const [formErrors, setFormErrors] = useState<Record<string, string>>({});
   const [busy, setBusy] = useState(false);
+  const [navOpen, setNavOpen] = useState(false);
   const [pending, startTransition] = useTransition();
 
   useEffect(() => {
@@ -118,6 +119,20 @@ export default function AskClient() {
     setReady(true);
   }, []);
 
+  useEffect(() => {
+    if (!navOpen) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setNavOpen(false);
+    };
+    document.addEventListener("keydown", onKey);
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.removeEventListener("keydown", onKey);
+      document.body.style.overflow = prev;
+    };
+  }, [navOpen]);
+
   const onlyGreeting = useMemo(
     () =>
       messages.length === 1 &&
@@ -127,6 +142,10 @@ export default function AskClient() {
   );
 
   const showEmpty = ready && session && (messages.length === 0 || onlyGreeting);
+
+  function closeNav() {
+    setNavOpen(false);
+  }
 
   async function onCheckIn(e: FormEvent) {
     e.preventDefault();
@@ -174,6 +193,7 @@ export default function AskClient() {
     if (!cleaned || !session || busy) return;
     setBusy(true);
     setDraft("");
+    closeNav();
     const userMsg: ChatMessage = { id: uid(), role: "user", content: cleaned };
     setMessages((prev) => [...prev, userMsg]);
     try {
@@ -218,6 +238,7 @@ export default function AskClient() {
 
   function onNewConversation() {
     setMessages([]);
+    closeNav();
   }
 
   function onSwitchStudent() {
@@ -227,25 +248,47 @@ export default function AskClient() {
     setFullName("");
     setUcmId("");
     setFormErrors({});
+    closeNav();
   }
 
   return (
-    <div className={styles.shell}>
-      <aside className={styles.sidebar}>
-        <div className={styles.lockup}>
-          <Image
-            className={styles.sideLogo}
-            src="/ucm/ucm-logo.webp"
-            alt="University of Central Missouri"
-            width={210}
-            height={110}
-            priority
-          />
-          <div>
-            <p className={styles.sideBrand}>CampusAsk</p>
-            <p className={styles.sideMules}>Academic Catalog Desk</p>
-            <p className={styles.sideTag}>{CAPTION}</p>
+    <div className={`${styles.shell} ${navOpen ? styles.shellNavOpen : ""}`}>
+      <button
+        type="button"
+        className={styles.backdrop}
+        aria-label="Close menu"
+        tabIndex={navOpen ? 0 : -1}
+        onClick={closeNav}
+      />
+
+      <aside
+        id="campusask-nav"
+        className={`${styles.sidebar} ${navOpen ? styles.sidebarOpen : ""}`}
+      >
+        <div className={styles.sideHeader}>
+          <div className={styles.lockup}>
+            <Image
+              className={styles.sideLogo}
+              src="/ucm/ucm-logo.webp"
+              alt="University of Central Missouri"
+              width={210}
+              height={110}
+              priority
+            />
+            <div>
+              <p className={styles.sideBrand}>CampusAsk</p>
+              <p className={styles.sideMules}>Academic Catalog Desk</p>
+              <p className={styles.sideTag}>{CAPTION}</p>
+            </div>
           </div>
+          <button
+            type="button"
+            className={styles.closeNavBtn}
+            onClick={closeNav}
+            aria-label="Close menu"
+          >
+            ✕
+          </button>
         </div>
 
         {session ? (
@@ -287,13 +330,43 @@ export default function AskClient() {
               Switch student
             </button>
           ) : null}
-          <Link className={styles.ghostBtn} href="/" style={{ textAlign: "center", lineHeight: "2.6rem" }}>
+          <Link
+            className={styles.ghostBtn}
+            href="/"
+            onClick={closeNav}
+            style={{ textAlign: "center", lineHeight: "2.75rem" }}
+          >
             Back to home
           </Link>
         </div>
       </aside>
 
       <section className={styles.main}>
+        <header className={styles.mobileBar}>
+          <button
+            type="button"
+            className={styles.menuBtn}
+            aria-expanded={navOpen}
+            aria-controls="campusask-nav"
+            onClick={() => setNavOpen((open) => !open)}
+          >
+            <span className={styles.menuIcon} aria-hidden="true" />
+            Menu
+          </button>
+          <div className={styles.mobileBrand}>
+            <p className={styles.mobileEyebrow}>Academic Catalog Desk</p>
+            <p className={styles.mobileTitle}>CampusAsk</p>
+          </div>
+          <Image
+            className={styles.mobileLogo}
+            src="/ucm/ucm-logo.webp"
+            alt="University of Central Missouri"
+            width={120}
+            height={63}
+            priority
+          />
+        </header>
+
         <header className={styles.topbar}>
           <Image
             className={styles.askLogo}
