@@ -25,7 +25,7 @@ Allowlisted UCM PDF/HTML
         → query expand + retrieve top-k (optional UG/Grad filter)
         → evidence gate
         → grounded hosted LLM + citation check
-        → Streamlit answer or safe abstention
+        → Next.js UI (or safe abstention)
 ```
 
 | Layer | Module |
@@ -34,8 +34,12 @@ Allowlisted UCM PDF/HTML
 | Ingest / extract | `src/ingestion.py`, `src/extraction.py` |
 | Chunk / embed / index | `src/chunking.py`, `src/embeddings.py`, `src/vector_store.py` |
 | Retrieve / answer | `src/retrieval.py`, `src/generation.py`, `src/citations.py` |
+| Conversation / identity | `src/conversation.py`, `src/identity.py` |
+| HTTP API | `api/main.py` (FastAPI) |
+| Product UI | `web/` (Next.js App Router) |
 | Eval | `src/evaluation.py`, `scripts/run_evaluation.py` |
-| UI | `app.py` (landing), `pages/ask.py`, `src/ui/`, `styles/campusask.css` |
+
+**Product shape:** Next.js frontend (Vercel) + Python FastAPI RAG service (Railway preferred; Render/Fly also work). The Streamlit app (`app.py`, `pages/ask.py`) remains as a local legacy prototype and is **not** the deploy target.
 
 **Model defaults**
 
@@ -46,25 +50,25 @@ Allowlisted UCM PDF/HTML
 
 ```
 AI_Project/
-├── app.py                 # UCM-branded landing page
-├── pages/ask.py           # grounded Ask / chat experience
-├── styles/campusask.css   # UCM-branded theme
-├── src/                   # RAG pipeline + ui helpers
+├── web/                   # Next.js product UI (landing + Ask)
+├── api/                   # FastAPI wrapper around the RAG stack
+├── src/                   # RAG pipeline + helpers
 ├── scripts/build_index.py
 ├── scripts/run_evaluation.py
 ├── data/raw/              # sources.json allowlist + local HTML/PDF
-├── data/processed/
-├── data/benchmark/        # 30-Q template + fixture smoke set
-├── indexes/               # FAISS + chunk metadata (built locally)
+├── indexes/               # FAISS + chunk metadata (committed)
+├── assets/ucm/            # Crest, campus, Mo the Mule
+├── app.py / pages/        # Legacy Streamlit prototype (optional)
+├── railway.toml           # API deploy on Railway
+├── render.yaml            # Alternate API deploy on Render
 ├── tests/
-├── results/
 ├── .env.example
 └── requirements.txt
 ```
 
 ## Setup
 
-Requires **Python 3.9+** (3.11+ recommended).
+Requires **Python 3.9+** (3.11+ recommended) and **Node.js 20+** for the UI.
 
 ```bash
 git clone https://github.com/sajicodes/AI_Project.git
@@ -73,14 +77,23 @@ python3 -m venv .venv
 source .venv/bin/activate   # Windows: .venv\Scripts\activate
 pip install -r requirements.txt
 cp .env.example .env
+
+cd web && npm install && cp .env.example .env.local && cd ..
 ```
 
-Edit `.env` and set (Groq free-tier defaults match `.env.example`):
+Edit root `.env` and set (Groq free-tier defaults match `.env.example`):
 
 ```bash
 LLM_API_KEY=gsk_...
 LLM_BASE_URL=https://api.groq.com/openai/v1
 LLM_MODEL=openai/gpt-oss-20b
+CORS_ORIGINS=http://localhost:3000
+```
+
+Edit `web/.env.local`:
+
+```bash
+NEXT_PUBLIC_API_URL=http://127.0.0.1:8000
 ```
 
 Retrieval and indexing work without an API key. **Answer generation** requires `LLM_API_KEY`.
@@ -128,19 +141,72 @@ Writes:
 
 Rebuild whenever official documents change.
 
-## Run the app
+## Run locally (product path)
+
+Terminal 1 — API:
+
+```bash
+source .venv/bin/activate
+uvicorn api.main:app --reload --host 0.0.0.0 --port 8000
+```
+
+Terminal 2 — Next.js UI:
+
+```bash
+npm run dev
+# → http://localhost:3000
+```
+
+The UI opens on a **University of Central Missouri** branded landing page. Choose **Ask CampusAsk** for grounded Q&A.
+
+**Student check-in (required):** before the first policy chat, enter **full name** and **UCM ID** (7–9 digits). Identity lives in browser `sessionStorage` only—UCM ID is never sent to the LLM or written to API logs. CampusAsk greets you by first name; the sidebar shows your name and a masked ID, with **Switch student** to reset.
+
+In Ask mode, use sample question chips, filter **Undergraduate / Graduate / All**, start a **New conversation**, or return **Back to home**. Ask questions, inspect **Sources & evidence** beside answers, and expect a clear abstention when the corpus does not support an answer. Polite greetings / thanks never abstain.
+
+Retrieval defaults: `TOP_K=8`, `EVIDENCE_MIN_SCORE=0.38`, with query expansion for thesis/GPA/probation/credit-hour phrasing.
+
+### Legacy Streamlit (optional)
 
 ```bash
 streamlit run app.py
 ```
 
-The app opens on a **University of Central Missouri** branded landing page. Choose **Ask CampusAsk** to open the grounded Q&A page (`pages/ask.py`).
+## Deploy
 
-**Student check-in (required):** before the first policy chat, enter **full name** and **UCM ID** (7–9 digits). Identity lives in Streamlit session state only—UCM ID is never sent to the LLM or written to logs. CampusAsk greets you by first name; the sidebar shows your name and a masked ID, with **Switch student** to reset.
+### 1. API on Railway (preferred)
 
-In Ask mode, use sample question chips, filter **Undergraduate / Graduate / All**, start a **New conversation**, or return **Back to home**. Ask questions, inspect **Sources & evidence**, and expect a clear abstention when the corpus does not support an answer.
+1. Create a Railway project from this GitHub repo.
+2. Railway reads `railway.toml` + `api/Dockerfile`.
+3. Set secrets / env vars:
 
-Retrieval defaults: `TOP_K=8`, `EVIDENCE_MIN_SCORE=0.38`, with query expansion for thesis/GPA/probation/credit-hour phrasing.
+| Variable | Required | Notes |
+|----------|----------|-------|
+| `LLM_API_KEY` | Yes | Groq (or compatible) key |
+| `LLM_BASE_URL` | No | Default `https://api.groq.com/openai/v1` |
+| `LLM_MODEL` | No | Default `openai/gpt-oss-20b` |
+| `CORS_ORIGINS` | Yes in prod | Your Vercel origin, e.g. `https://campusask.vercel.app` |
+| `TOP_K` / `EVIDENCE_MIN_SCORE` | No | Retrieval tuning |
+
+4. Health check: `GET /health`
+5. Copy the public API URL (e.g. `https://campusask-api.up.railway.app`)
+
+**Alternates:** `render.yaml` for Render, or any Docker host (Fly.io) using `api/Dockerfile`.
+
+### 2. Web on Vercel
+
+1. Import the repo in Vercel; set **Root Directory** to `web`.
+2. Framework preset: Next.js (see `web/vercel.json`).
+3. Environment variable:
+
+| Variable | Value |
+|----------|-------|
+| `NEXT_PUBLIC_API_URL` | Railway/Render/Fly API base URL (no trailing slash) |
+
+4. Deploy. Open the landing page → **Ask CampusAsk**.
+
+### Single-host course demo
+
+If you prefer one platform for the demo day, run the API on Railway and the Next app on Vercel (recommended), **or** host both on Railway (static/Next service + API service) with the same `NEXT_PUBLIC_API_URL` wiring.
 
 ## Tests
 
@@ -148,7 +214,11 @@ Retrieval defaults: `TOP_K=8`, `EVIDENCE_MIN_SCORE=0.38`, with query expansion f
 pytest
 ```
 
-Core coverage: HTML/PDF provenance, chunk metadata, FAISS round-trip, citation rejection, evidence-gate abstention, identity validation, query expansion, retrieval smoke for thesis/GPA/credit-hour vs off-topic, local fixture ingest.
+Core coverage: HTML/PDF provenance, chunk metadata, FAISS round-trip, citation rejection, evidence-gate abstention, identity validation, query expansion, retrieval smoke for thesis/GPA/credit-hour vs off-topic, conversational greetings, FastAPI health/identity/greeting smoke, local fixture ingest.
+
+```bash
+cd web && npm run build
+```
 
 ## Evaluation
 
@@ -186,8 +256,9 @@ Chunk-size (300/500/800) and `k` (3/5/10) sweeps: rebuild the index with `CHUNK_
 - PDF multi-column layouts may extract poorly; inspect `ingest_log.json`.
 - Image-only scanned pages are flagged, not silently treated as text.
 - Live UCM HTML can change; prefer versioned local PDFs for demos.
-- Without `LLM_API_KEY`, the UI retrieves evidence but cannot draft grounded answers.
+- Without `LLM_API_KEY`, the API retrieves evidence but cannot draft grounded answers.
 - Mixing catalog years or UG/Grad rules is avoided via metadata filters—keep source metadata accurate.
+- FAISS + embeddings are intentionally off Vercel serverless; keep them on the Python API host.
 
 ## License / use
 

@@ -8,28 +8,21 @@ from pathlib import Path
 
 import streamlit as st
 
+from src.branding import CAPTION, SAMPLE_QUESTIONS
+
 _ROOT = Path(__file__).resolve().parents[2]
 _STYLES_PATH = _ROOT / "styles" / "campusask.css"
 _UCM = _ROOT / "assets" / "ucm"
 
-CAPTION = "Official UCM policy answers, grounded in the catalogs."
-
-SAMPLE_QUESTIONS = [
-    {
-        "id": "thesis",
-        "label": "Thesis vs non-thesis",
-        "question": "What is the difference between a thesis and non-thesis master's option?",
-    },
-    {
-        "id": "probation",
-        "label": "Academic probation GPA",
-        "question": "What GPA places an undergraduate student on academic probation?",
-    },
-    {
-        "id": "credits",
-        "label": "Full-time credit hours",
-        "question": "How many credit hours are required for full-time graduate enrollment?",
-    },
+__all__ = [
+    "CAPTION",
+    "SAMPLE_QUESTIONS",
+    "inject_theme",
+    "render_ask_empty_state",
+    "render_ask_topbar",
+    "render_landing_copy",
+    "render_landing_footnote",
+    "render_sidebar_brand",
 ]
 
 
