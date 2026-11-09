@@ -10,7 +10,11 @@ from typing import Any
 
 from src.citations import format_source_block, validate_citations
 from src.config import Settings, get_settings
-from src.conversation import conversational_reply
+from src.conversation import (
+    conversational_reply,
+    detect_session_level_hint,
+    rewrite_program_overview_query,
+)
 from src.retrieval import RetrievedPassage, load_default_store, retrieve
 from src.vector_store import VectorStore
 
@@ -47,6 +51,7 @@ class AnswerResult:
     max_score: float | None = None
     error: str | None = None
     intent: str | None = None
+    suggested_academic_level: str | None = None
 
     def to_dict(self) -> dict[str, Any]:
         return {
@@ -58,6 +63,7 @@ class AnswerResult:
             "max_score": self.max_score,
             "error": self.error,
             "intent": self.intent,
+            "suggested_academic_level": self.suggested_academic_level,
             "passage_ids": [p.chunk_id for p in self.passages],
         }
 
@@ -217,25 +223,60 @@ def answer_question(
             status="conversational",
             answer=chat.answer,
             intent=chat.intent,
+            suggested_academic_level=chat.suggested_academic_level,
         )
 
     settings = settings or get_settings()
     store = store or load_default_store(settings)
     level = None if academic_level.lower() == "all" else academic_level.lower()
+    level_hint = detect_session_level_hint(question)
+    # When UI filter is All, prefer graduate chunks for master's-student context.
+    if not level and level_hint:
+        level = level_hint
+
+    overview = rewrite_program_overview_query(question)
+    retrieval_query = overview.retrieval_query if overview else question
+    llm_question = overview.llm_question if overview else question
+    suggested = (
+        overview.suggested_academic_level
+        if overview
+        else level_hint
+    )
+    if overview and overview.suggested_academic_level and not level:
+        level = overview.suggested_academic_level
+
     passages = retrieve(
-        question,
+        retrieval_query,
         store,
         settings=settings,
         top_k=top_k,
         level=level,
         year=year,
     )
-    return generate_answer(
-        question,
+
+    # Program identity with weak evidence → soft prompt, never a dry abstention.
+    if overview is not None and not evidence_is_sufficient(
+        passages, min_score=settings.evidence_min_score
+    ):
+        return AnswerResult(
+            status="conversational",
+            answer=overview.soft_prompt,
+            intent="student_context",
+            suggested_academic_level=suggested,
+            passages=passages,
+            max_score=max((p.score for p in passages), default=None),
+        )
+
+    result = generate_answer(
+        llm_question,
         passages,
         settings=settings,
-        academic_level=academic_level,
+        academic_level=level or academic_level,
     )
+    result.suggested_academic_level = suggested
+    if overview is not None:
+        result.intent = "program_overview"
+    return result
 
 
 def answer_question_json(question: str, **kwargs: Any) -> str:

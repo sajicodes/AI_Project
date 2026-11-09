@@ -10,7 +10,22 @@ import re
 from typing import Iterable
 
 # Compact synonym / policy-phrase expansions keyed by trigger patterns.
+# Program-specific rules come first so they win the max_variants budget.
 _RULES: list[tuple[re.Pattern[str], list[str]]] = [
+    (
+        re.compile(
+            r"\b(?:computer\s*science|comp\s*sci|\bcs\b)\b.*\b(?:master|masters|master'?s|ms|m\.s\.?|graduate)\b|"
+            r"\b(?:master|masters|master'?s|ms|m\.s\.?|graduate)\b.*\b(?:computer\s*science|comp\s*sci|\bcs\b)\b|"
+            r"\bcomputer\s*science,\s*ms\b|"
+            r"\bms\s+in\s+computer\s*science\b",
+            re.IGNORECASE,
+        ),
+        [
+            "Computer Science, MS (53-976) 30 hours Department of Computer Science and Cybersecurity",
+            "Master of Science degree in Computer Science admission requirements thesis project",
+            "Computer Science MS graduate program semester hours options culminating experience",
+        ],
+    ),
     (
         re.compile(
             r"\b(thesis|non[-\s]?thesis|non thesis)\b.*\b(master|masters|master'?s|graduate|ms|ma)\b|"
@@ -122,6 +137,7 @@ def infer_level_hint(query: str) -> str | None:
         "master",
         "masters",
         "master's",
+        "ms",
         "thesis",
         "non-thesis",
         "nonthesis",
@@ -143,6 +159,7 @@ def lexical_terms(query: str) -> list[str]:
     q = (query or "").lower()
     terms: list[str] = []
     multi = [
+        "computer science",
         "non-thesis",
         "non thesis",
         "nonthesis",
@@ -175,6 +192,7 @@ def lexical_terms(query: str) -> list[str]:
             "overload",
             "masters",
             "master's",
+            "ms",
         }:
             terms.append(tok)
     return _unique(terms)

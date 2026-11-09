@@ -80,6 +80,24 @@ def test_ask_hi_how_are_you_short_circuits():
     assert body["sources"] == []
 
 
+def test_ask_masters_student_context_never_abstains():
+    res = client.post(
+        "/v1/ask",
+        json={
+            "question": "i am a masters student",
+            "academic_level": "all",
+            "first_name": "Alex",
+        },
+    )
+    assert res.status_code == 200
+    body = res.json()
+    assert body["status"] == "conversational"
+    assert body["intent"] == "student_context"
+    assert "master" in body["answer"].lower()
+    assert body["sources"] == []
+    assert body.get("suggested_academic_level") == "graduate"
+
+
 def test_identity_rejects_non_700_id():
     res = client.post(
         "/v1/identity/validate",

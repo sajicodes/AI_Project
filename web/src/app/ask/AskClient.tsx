@@ -18,6 +18,7 @@ import {
   loadSession,
   markGreeted,
   saveSession,
+  setSessionAcademicLevel,
 } from "@/lib/session";
 import styles from "./ask.module.css";
 
@@ -103,6 +104,9 @@ export default function AskClient() {
   useEffect(() => {
     const existing = loadSession();
     setSession(existing);
+    if (existing?.academicLevel && existing.academicLevel !== "all") {
+      setLevel(existing.academicLevel);
+    }
     if (existing && !existing.greeted) {
       const greeting = `Hi ${existing.firstName}! How can I help with a UCM catalog or policy question today?`;
       setMessages([
@@ -202,6 +206,15 @@ export default function AskClient() {
         academicLevel: level,
         firstName: session.firstName,
       });
+      const suggested = result.suggested_academic_level;
+      if (
+        suggested &&
+        (suggested === "graduate" || suggested === "undergraduate") &&
+        level === "all"
+      ) {
+        setLevel(suggested);
+        setSession(setSessionAcademicLevel(session, suggested));
+      }
       const assistant: ChatMessage = {
         id: uid(),
         role: "assistant",
@@ -307,7 +320,13 @@ export default function AskClient() {
             id="academic-level"
             className={styles.select}
             value={level}
-            onChange={(e) => setLevel(e.target.value as AcademicLevel)}
+            onChange={(e) => {
+              const next = e.target.value as AcademicLevel;
+              setLevel(next);
+              if (session) {
+                setSession(setSessionAcademicLevel(session, next));
+              }
+            }}
             disabled={!session}
           >
             <option value="all">All</option>
