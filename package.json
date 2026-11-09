@@ -1,8 +1,13 @@
 {
-  "name": "ai-project",
+  "name": "campusask",
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "dev": "node -e \"console.log('CampusAsk env ready'); setInterval(() => {}, 1e9)\""
+    "dev": "npm --prefix web run dev",
+    "build": "npm --prefix web run build",
+    "start": "npm --prefix web run start",
+    "lint": "npm --prefix web run lint",
+    "api": "python -m uvicorn api.main:app --reload --host 0.0.0.0 --port 8000",
+    "dev:keep-alive": "node -e \"console.log('CampusAsk env ready'); setInterval(() => {}, 1e9)\""
   }
 }

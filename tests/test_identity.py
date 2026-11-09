@@ -1,6 +1,6 @@
 """Student identity gate validation (session UX only)."""
 
-from src.ui.identity import (
+from src.identity import (
     StudentIdentity,
     normalize_ucm_id,
     validate_full_name,
