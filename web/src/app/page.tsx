@@ -18,10 +18,6 @@ export default function LandingPage() {
         <p className={styles.mules}>Academic Catalog Desk</p>
         <h1 className={styles.product}>CampusAsk</h1>
         <p className={styles.headline}>{CAPTION}</p>
-        <p className={styles.support}>
-          Every reply cites official catalog evidence, or clearly abstains when
-          evidence is missing.
-        </p>
         <Link className={styles.cta} href="/ask">
           Ask CampusAsk
         </Link>

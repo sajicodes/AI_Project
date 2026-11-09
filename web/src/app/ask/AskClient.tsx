@@ -495,10 +495,6 @@ export default function AskClient() {
                       <div>
                         <p className={styles.emptyTitle}>Ask CampusAsk</p>
                         <p className={styles.emptyText}>{CAPTION}</p>
-                        <p className={styles.emptyHint}>
-                          Catalog answers with citations, or a clear abstention when
-                          evidence is missing.
-                        </p>
                       </div>
                     </div>
                   )}
