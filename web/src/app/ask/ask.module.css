@@ -157,6 +157,12 @@
   border: 1px solid rgba(232, 217, 220, 0.22);
   background: rgba(255, 255, 255, 0.08);
   color: #fff8f6;
+  color-scheme: dark;
+}
+
+.select option {
+  background: #ffffff;
+  color: #1c1214;
 }
 
 .sideActions {
@@ -202,6 +208,9 @@
   min-height: 100dvh;
   min-width: 0;
   width: 100%;
+  color: var(--ucm-ink);
+  background: transparent;
+  color-scheme: light;
 }
 
 /* Phone: single compact brand header */
@@ -274,7 +283,7 @@
   height: auto;
 }
 
-/* Desktop topbar hidden on phone — avoids duplicate branding */
+/* Desktop topbar hidden on phone. Avoids duplicate branding. */
 .topbar {
   display: none;
 }
@@ -345,6 +354,8 @@
   border-radius: 12px;
   border: 1px solid var(--ucm-line);
   background: var(--ucm-panel-tint);
+  color: var(--ucm-ink);
+  color-scheme: light;
 }
 
 .error {
@@ -580,6 +591,8 @@
   border: 1px solid var(--ucm-line);
   background: var(--ucm-panel);
   font-size: 1rem;
+  color: var(--ucm-ink);
+  color-scheme: light;
 }
 
 .sendBtn {
