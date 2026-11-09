@@ -48,8 +48,8 @@ function SourcesList({ sources }: { sources: SourceCard[] }) {
           <article className={styles.sourceCard} key={`${src.chunk_id || src.title}-${idx}`}>
             <h4>{src.title || "Untitled source"}</h4>
             <p className={styles.sourceMeta}>
-              {src.location || "—"} · Level: {src.level || "—"} · Year:{" "}
-              {src.year || "—"}
+              {src.location || "n/a"} · Level: {src.level || "n/a"} · Year:{" "}
+              {src.year || "n/a"}
               {scoreBit}
               {src.url ? (
                 <>
@@ -411,7 +411,7 @@ export default function AskClient() {
               <h2 className={styles.identityTitle}>Student check-in</h2>
               <p className={styles.identityCopy}>
                 Enter your name and UCM ID to start. Your ID stays in this browser
-                session only—it is never sent to the language model.
+                session only. It is never sent to the language model.
               </p>
               <form className={styles.form} onSubmit={onCheckIn}>
                 <div>
@@ -494,7 +494,7 @@ export default function AskClient() {
                         <p className={styles.emptyTitle}>Ask CampusAsk</p>
                         <p className={styles.emptyText}>{CAPTION}</p>
                         <p className={styles.emptyHint}>
-                          Catalog answers with citations—or a clear abstention when
+                          Catalog answers with citations, or a clear abstention when
                           evidence is missing.
                         </p>
                       </div>
