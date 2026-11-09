@@ -396,13 +396,6 @@
   text-align: center;
 }
 
-.emptyHint {
-  margin: 0.45rem 0 0;
-  color: var(--ucm-muted);
-  line-height: 1.45;
-  text-align: center;
-}
-
 .chipLabel {
   margin: 0.25rem 0 0.55rem;
   font-size: 0.78rem;
@@ -756,8 +749,7 @@
     text-align: left;
   }
 
-  .emptyText,
-  .emptyHint {
+  .emptyText {
     text-align: left;
   }
 
