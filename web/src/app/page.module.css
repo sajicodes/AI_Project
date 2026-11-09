@@ -1,0 +1,112 @@
+.hero {
+  min-height: 100vh;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  overflow: hidden;
+  color: #fff8f6;
+  background:
+    linear-gradient(
+      105deg,
+      rgba(30, 6, 12, 0.92) 0%,
+      rgba(61, 10, 20, 0.78) 42%,
+      rgba(30, 6, 12, 0.55) 100%
+    ),
+    url("/ucm/campus-quad.webp") center / cover no-repeat;
+}
+
+.copy {
+  position: relative;
+  z-index: 1;
+  max-width: 720px;
+  padding: clamp(2rem, 6vw, 5rem);
+  padding-bottom: clamp(3rem, 8vw, 5.5rem);
+  animation: hero-fade-up 0.85s ease-out both;
+}
+
+.logo {
+  width: min(340px, 78vw);
+  height: auto;
+  display: block;
+  margin-bottom: 1.1rem;
+  filter: drop-shadow(0 8px 24px rgba(0, 0, 0, 0.35));
+}
+
+.mules {
+  margin: 0 0 0.35rem;
+  font-family: var(--font-body);
+  font-size: 0.95rem;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--ucm-gold-soft);
+}
+
+.product {
+  margin: 0 0 0.55rem;
+  font-family: var(--font-display);
+  font-size: clamp(3.2rem, 8vw, 5.4rem);
+  font-weight: 700;
+  line-height: 0.95;
+  letter-spacing: -0.02em;
+  color: #fff;
+  text-shadow: 0 10px 40px rgba(0, 0, 0, 0.35);
+}
+
+.headline {
+  margin: 0 0 0.65rem;
+  max-width: 28ch;
+  font-size: clamp(1.05rem, 2.2vw, 1.25rem);
+  font-weight: 500;
+  line-height: 1.45;
+  color: rgba(255, 248, 246, 0.92);
+}
+
+.support {
+  margin: 0 0 1.6rem;
+  max-width: 36ch;
+  font-size: 0.98rem;
+  line-height: 1.5;
+  color: rgba(255, 248, 246, 0.78);
+}
+
+.cta {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 3.1rem;
+  padding: 0.85rem 1.55rem;
+  border: 1px solid rgba(232, 212, 138, 0.55);
+  border-radius: 999px;
+  background: linear-gradient(135deg, var(--ucm-crimson), var(--ucm-maroon));
+  color: #fff;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  text-decoration: none;
+  animation: cta-pulse 2.8s ease-in-out infinite;
+  transition: transform 0.2s ease, filter 0.2s ease;
+}
+
+.cta:hover {
+  transform: translateY(-2px);
+  filter: brightness(1.06);
+  text-decoration: none;
+  color: #fff;
+}
+
+.footnote {
+  margin: 1.35rem 0 0;
+  font-size: 0.82rem;
+  color: rgba(255, 248, 246, 0.62);
+}
+
+@media (max-width: 640px) {
+  .copy {
+    padding-bottom: 3.5rem;
+  }
+
+  .product {
+    font-size: clamp(2.6rem, 14vw, 3.4rem);
+  }
+}

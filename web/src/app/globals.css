@@ -1,0 +1,100 @@
+@import url("https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600;700&family=Figtree:wght@400;500;600;700&display=swap");
+
+:root {
+  --ucm-crimson: #9e1b32;
+  --ucm-maroon: #6e1224;
+  --ucm-maroon-deep: #3d0a14;
+  --ucm-gold: #c9a227;
+  --ucm-gold-soft: #e8d48a;
+  --ucm-ink: #1c1214;
+  --ucm-muted: #5e4a4e;
+  --ucm-panel: #ffffff;
+  --ucm-panel-tint: #fff8f6;
+  --ucm-line: #e8d9dc;
+  --ucm-ok: #1d6b4f;
+  --ucm-warn: #9a6b00;
+  --ucm-err: #9e1b32;
+  --radius-msg: 16px;
+  --shadow-soft: 0 10px 40px rgba(62, 10, 20, 0.08);
+  --font-display: "Cormorant Garamond", "Palatino Linotype", Georgia, serif;
+  --font-body: "Figtree", "Segoe UI", sans-serif;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  min-height: 100%;
+  font-family: var(--font-body);
+  color: var(--ucm-ink);
+  background:
+    radial-gradient(900px 480px at 8% -5%, rgba(158, 27, 50, 0.1) 0%, transparent 55%),
+    radial-gradient(700px 420px at 95% 8%, rgba(201, 162, 39, 0.12) 0%, transparent 50%),
+    linear-gradient(165deg, #fbf6f4 0%, #f3e8ea 42%, #efe6df 100%);
+  background-attachment: fixed;
+}
+
+a {
+  color: var(--ucm-crimson);
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+}
+
+@keyframes hero-fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(22px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes soft-rise {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes cta-pulse {
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 rgba(201, 162, 39, 0.45);
+  }
+  50% {
+    box-shadow: 0 0 0 12px rgba(201, 162, 39, 0);
+  }
+}
+
+@keyframes message-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
