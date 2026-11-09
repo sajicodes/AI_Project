@@ -13,7 +13,7 @@ from contextlib import asynccontextmanager
 from pathlib import Path
 from typing import Any, Literal
 
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, Header, HTTPException, Query, Request
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field
 
@@ -22,6 +22,7 @@ if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
 from src.config import Settings, get_settings  # noqa: E402
+from src.firestore_logs import firebase_enabled, list_login_logs, log_checkin  # noqa: E402
 from src.generation import answer_question  # noqa: E402
 from src.identity import (  # noqa: E402
     build_identity,
@@ -115,6 +116,8 @@ class AskResponse(BaseModel):
 class IdentityRequest(BaseModel):
     full_name: str = Field(..., max_length=80)
     ucm_id: str = Field(..., max_length=20)
+    academic_level: Literal["all", "undergraduate", "graduate"] | None = None
+    user_agent: str | None = Field(default=None, max_length=500)
 
 
 class IdentityResponse(BaseModel):
@@ -124,6 +127,13 @@ class IdentityResponse(BaseModel):
     masked_id: str | None = None
     greeting: str | None = None
     errors: dict[str, str] = Field(default_factory=dict)
+
+
+class LoginLogsResponse(BaseModel):
+    ok: bool
+    firebase_enabled: bool
+    count: int
+    logs: list[dict[str, Any]] = Field(default_factory=list)
 
 
 @app.get("/health")
@@ -143,6 +153,7 @@ def health() -> dict[str, Any]:
         "index_loaded": index_ok,
         "chunk_count": chunk_count,
         "llm_configured": has_key,
+        "firebase_configured": firebase_enabled(),
     }
 
 
@@ -152,8 +163,8 @@ def samples() -> dict[str, Any]:
 
 
 @app.post("/v1/identity/validate", response_model=IdentityResponse)
-def identity_validate(body: IdentityRequest) -> IdentityResponse:
-    """Validate Name + UCM ID. Returns masked ID only — never echo full ID in logs."""
+def identity_validate(body: IdentityRequest, request: Request) -> IdentityResponse:
+    """Validate Name + UCM ID. On success, optionally write a Firestore login log."""
     errors: dict[str, str] = {}
     name_err = validate_full_name(body.full_name)
     id_err = validate_ucm_id(body.ucm_id)
@@ -165,12 +176,55 @@ def identity_validate(body: IdentityRequest) -> IdentityResponse:
         return IdentityResponse(ok=False, errors=errors)
 
     identity = build_identity(body.full_name, body.ucm_id)
+    # Persist check-in to Firestore when configured. Never send UCM ID to the LLM.
+    # Application logs still avoid echoing the full ID.
+    ua = (body.user_agent or request.headers.get("user-agent") or "").strip() or None
+    level = body.academic_level if body.academic_level and body.academic_level != "all" else None
+    try:
+        log_checkin(
+            full_name=identity.full_name,
+            ucm_id=identity.ucm_id,
+            academic_level=level,
+            user_agent=ua,
+        )
+    except Exception:  # noqa: BLE001
+        logger.exception("Unexpected check-in log failure (ignored)")
+
     return IdentityResponse(
         ok=True,
         full_name=identity.full_name,
         first_name=identity.first_name,
         masked_id=identity.masked_id,
         greeting=welcome_greeting(identity.first_name),
+    )
+
+
+@app.get("/v1/admin/login-logs", response_model=LoginLogsResponse)
+def admin_login_logs(
+    limit: int = Query(default=25, ge=1, le=100),
+    x_admin_token: str | None = Header(default=None),
+) -> LoginLogsResponse:
+    """Demo-only: list recent Firestore check-in logs.
+
+    Protect with ``CAMPUSASK_ADMIN_TOKEN`` (send header ``X-Admin-Token``).
+    When the token env var is unset, the endpoint returns 503 so it stays off
+    by default outside local demos.
+    """
+    expected = os.getenv("CAMPUSASK_ADMIN_TOKEN", "").strip()
+    if not expected:
+        raise HTTPException(
+            status_code=503,
+            detail="Login-log admin endpoint is disabled (set CAMPUSASK_ADMIN_TOKEN).",
+        )
+    if not x_admin_token or x_admin_token != expected:
+        raise HTTPException(status_code=401, detail="Invalid or missing admin token.")
+
+    logs = list_login_logs(limit=limit)
+    return LoginLogsResponse(
+        ok=True,
+        firebase_enabled=firebase_enabled(),
+        count=len(logs),
+        logs=logs,
     )
 
 

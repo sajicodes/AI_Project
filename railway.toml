@@ -2,6 +2,8 @@
 # Set root to repo root; Railway uses api/Dockerfile.
 # Required secrets: LLM_API_KEY
 # Optional: LLM_BASE_URL, LLM_MODEL, CORS_ORIGINS, TOP_K, EVIDENCE_MIN_SCORE
+# Optional Firebase login logs: FIREBASE_ENABLED, FIREBASE_PROJECT_ID,
+# FIREBASE_CREDENTIALS_JSON, CAMPUSASK_ADMIN_TOKEN
 
 [build]
 builder = "DOCKERFILE"

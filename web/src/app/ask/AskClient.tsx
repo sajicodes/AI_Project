@@ -156,7 +156,9 @@ export default function AskClient() {
     setBusy(true);
     setFormErrors({});
     try {
-      const result = await validateIdentity(fullName, ucmId);
+      const result = await validateIdentity(fullName, ucmId, {
+        academicLevel: level,
+      });
       if (!result.ok) {
         setFormErrors(result.errors || {});
         return;
