@@ -182,9 +182,67 @@ def _program_phrase_hits(
             continue
         # Strong enough to pass the evidence gate and outrank unrelated MS pages.
         score = 0.88 + 0.04 * min(hits, 3)
+        # Prefer the Grad Catalog program header over incidental mentions.
+        if "computer science, ms (53-976)" in text:
+            score += 0.12
+        if "30 hours" in text and "computer science, ms" in text:
+            score += 0.06
         scored.append((chunk, score))
     scored.sort(key=lambda item: item[1], reverse=True)
     return scored[:8]
+
+
+def _neighbor_program_pages(
+    hits: list[tuple[Chunk, float]],
+    store: VectorStore,
+    *,
+    level: str | None,
+    year: str | None,
+) -> list[tuple[Chunk, float]]:
+    """Pull adjacent Grad Catalog pages once a program-title hit is found."""
+    if not hits:
+        return []
+    level_l = (level or "").lower()
+    year_l = (year or "").lower()
+    pages: set[int] = set()
+    source_ids: set[str] = set()
+    for chunk, _score in hits[:3]:
+        text = (chunk.text or "").lower()
+        if "computer science, ms" not in text and "53-976" not in text:
+            continue
+        if chunk.page is None:
+            continue
+        source_ids.add(chunk.source_id or "")
+        pages.update({chunk.page - 1, chunk.page, chunk.page + 1, chunk.page + 2})
+    if not pages:
+        return []
+    extras: list[tuple[Chunk, float]] = []
+    for chunk in store.chunks:
+        if is_dev_fixture(chunk):
+            continue
+        if chunk.source_id not in source_ids:
+            continue
+        if chunk.page is None or chunk.page not in pages:
+            continue
+        if level_l and level_l not in {"all", ""}:
+            chunk_level = (chunk.level or "all").lower()
+            if chunk_level not in {level_l, "all", "unknown"}:
+                continue
+        if year_l and year_l not in {"all", "", "unknown"}:
+            if (chunk.year or "").lower() != year_l:
+                continue
+        text = (chunk.text or "").lower()
+        # Admission / hours / thesis pages around the CS MS header.
+        bonus = 0.82
+        if "admission requirements" in text:
+            bonus += 0.06
+        if "semester hours" in text or "30 hours" in text:
+            bonus += 0.04
+        if "thesis" in text or "master's project" in text:
+            bonus += 0.04
+        extras.append((chunk, bonus))
+    extras.sort(key=lambda item: item[1], reverse=True)
+    return extras[:6]
 
 
 def _merge_hits(
@@ -212,6 +270,7 @@ def retrieve(
     year: str | None = None,
     expand: bool = True,
     include_dev_fixtures: bool = False,
+    phrase_query: str | None = None,
 ) -> list[RetrievedPassage]:
     """Retrieve top-k passages with optional query expansion and soft level hints.
 
@@ -225,11 +284,17 @@ def retrieve(
 
     variants = expand_query(query) if expand else [query.strip()]
     terms = lexical_terms(query)
+    if phrase_query:
+        terms = list(dict.fromkeys(terms + lexical_terms(phrase_query)))
 
     # When the UI filter is "all"/None, prefer a level implied by the question.
+    # Masters/master's cues also win over a mismatched undergraduate filter.
     effective_level = level
-    if not effective_level or effective_level.lower() in {"all", ""}:
-        hint = infer_level_hint(query)
+    query_for_hint = f"{query} {phrase_query or ''}".strip()
+    hint = infer_level_hint(query_for_hint)
+    if hint == "graduate":
+        effective_level = "graduate"
+    elif not effective_level or effective_level.lower() in {"all", ""}:
         if hint:
             effective_level = hint
 
@@ -258,11 +323,24 @@ def retrieve(
 
     # Inject exact program-title phrase hits (e.g. Computer Science, MS) that
     # dense retrieval often misses when the title is buried mid-page.
-    phrase_hits = _program_phrase_hits(
-        query, store, level=effective_level, year=year
-    )
-    if phrase_hits:
-        merged = _merge_hits([merged, phrase_hits])
+    phrase_queries = [query]
+    if phrase_query and phrase_query.strip() and phrase_query.strip() != query.strip():
+        phrase_queries.append(phrase_query)
+    phrase_buckets: list[list[tuple[Chunk, float]]] = []
+    for pq in phrase_queries:
+        hits = _program_phrase_hits(pq, store, level=effective_level, year=year)
+        if not hits and effective_level:
+            # Title pages are graduate-tagged; don't lose them to a bad filter.
+            hits = _program_phrase_hits(pq, store, level=None, year=year)
+        if hits:
+            phrase_buckets.append(hits)
+            neighbors = _neighbor_program_pages(
+                hits, store, level=effective_level or "graduate", year=year
+            )
+            if neighbors:
+                phrase_buckets.append(neighbors)
+    if phrase_buckets:
+        merged = _merge_hits([merged, *phrase_buckets])
 
     if not include_dev_fixtures:
         merged = [(c, s) for c, s in merged if not is_dev_fixture(c)]

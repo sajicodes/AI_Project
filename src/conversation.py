@@ -220,7 +220,8 @@ def rewrite_program_overview_query(text: str) -> ProgramOverviewRewrite | None:
 
     soft = (
         f"Got it — {label} master's student. "
-        "Ask about credit hours, GPA, probation, thesis, or your program."
+        "What would you like to know — credit hours, admission, thesis options, "
+        "or something else about your program?"
     )
     llm_question = (
         f"What are the Graduate Catalog requirements for the {label} MS program "
@@ -336,8 +337,8 @@ def conversational_reply(
             r"master|grad", raw_l, flags=re.IGNORECASE
         ):
             answer = (
-                "Got it — master's student. Ask about credit hours, GPA, probation, "
-                "thesis, or your program."
+                "Got it — master's student. What would you like to know — credit hours, "
+                "admission, thesis options, or something else about your program?"
             )
             level_hint = "graduate"
         elif level_hint == "undergraduate":

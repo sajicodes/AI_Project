@@ -133,11 +133,13 @@ def generate_answer(
     *,
     settings: Settings | None = None,
     academic_level: str = "all",
+    min_score: float | None = None,
 ) -> AnswerResult:
     settings = settings or get_settings()
     max_score = max((p.score for p in passages), default=None)
+    gate = settings.evidence_min_score if min_score is None else min_score
 
-    if not evidence_is_sufficient(passages, min_score=settings.evidence_min_score):
+    if not evidence_is_sufficient(passages, min_score=gate):
         return AnswerResult(
             status="abstained",
             answer=ABSTAIN_MESSAGE,
@@ -206,6 +208,30 @@ def generate_answer(
     )
 
 
+def _prefer_program_title_passages(
+    passages: list[RetrievedPassage],
+    program_label: str,
+) -> list[RetrievedPassage]:
+    """Surface Grad Catalog program-title pages ahead of course-list noise."""
+    if not passages or not program_label:
+        return passages
+    label = program_label.lower()
+    title_cues = (
+        f"{label}, ms",
+        f"master of science degree in {label}",
+        f"{label} ms (",
+    )
+
+    def rank_key(item: RetrievedPassage) -> tuple[int, int, float]:
+        text = (item.chunk.text or "").lower()
+        title_hit = any(cue in text for cue in title_cues)
+        hours_hit = "30 hours" in text or "(53-976)" in text
+        # Prefer title pages, then high dense/phrase scores.
+        return (0 if title_hit else 1, 0 if hours_hit else 1, -float(item.score))
+
+    return sorted(passages, key=rank_key)
+
+
 def answer_question(
     question: str,
     *,
@@ -230,10 +256,6 @@ def answer_question(
     store = store or load_default_store(settings)
     level = None if academic_level.lower() == "all" else academic_level.lower()
     level_hint = detect_session_level_hint(question)
-    # When UI filter is All, prefer graduate chunks for master's-student context.
-    if not level and level_hint:
-        level = level_hint
-
     overview = rewrite_program_overview_query(question)
     retrieval_query = overview.retrieval_query if overview else question
     llm_question = overview.llm_question if overview else question
@@ -242,7 +264,18 @@ def answer_question(
         if overview
         else level_hint
     )
-    if overview and overview.suggested_academic_level and not level:
+
+    # Masters / known-program identity overrides a mismatched Undergraduate UI filter
+    # so CS MS (53-976) Grad Catalog pages are not blocked by BS chunks.
+    wants_graduate = level_hint == "graduate" or (
+        overview is not None and overview.suggested_academic_level == "graduate"
+    )
+    if wants_graduate:
+        level = "graduate"
+        suggested = "graduate"
+    elif not level and level_hint:
+        level = level_hint
+    elif overview and overview.suggested_academic_level and not level:
         level = overview.suggested_academic_level
 
     passages = retrieve(
@@ -252,7 +285,12 @@ def answer_question(
         top_k=top_k,
         level=level,
         year=year,
+        # Also scan the raw student utterance for program-title phrase rules.
+        phrase_query=question if overview is not None else None,
     )
+
+    if overview is not None:
+        passages = _prefer_program_title_passages(passages, overview.program_label)
 
     # Program identity with weak evidence → soft prompt, never a dry abstention.
     if overview is not None and not evidence_is_sufficient(
@@ -267,15 +305,32 @@ def answer_question(
             max_score=max((p.score for p in passages), default=None),
         )
 
+    # Known program overview: slightly lower gate so title-page phrase hits can answer.
+    overview_gate = None
+    if overview is not None:
+        overview_gate = max(0.28, float(settings.evidence_min_score) - 0.08)
+
     result = generate_answer(
         llm_question,
         passages,
         settings=settings,
         academic_level=level or academic_level,
+        min_score=overview_gate,
     )
     result.suggested_academic_level = suggested
     if overview is not None:
         result.intent = "program_overview"
+        # Never abstain on “I am a masters student in <known program>”.
+        if result.status in {"abstained", "error"}:
+            return AnswerResult(
+                status="conversational",
+                answer=overview.soft_prompt,
+                intent="student_context",
+                suggested_academic_level=suggested,
+                passages=passages,
+                max_score=max((p.score for p in passages), default=None),
+                error=result.error,
+            )
     return result
 
 

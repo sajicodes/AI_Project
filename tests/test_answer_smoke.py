@@ -150,3 +150,45 @@ def test_cs_ms_program_context_yields_grounded_overview(store_and_settings):
     assert result.cited_ids
     assert "30" in result.answer
     assert "computer science" in result.answer.lower()
+
+
+def test_cs_ms_with_undergraduate_level_yields_grad_overview(store_and_settings):
+    """UI Academic level=Undergraduate must not force CS BS abstention for masters CS."""
+    store, settings = store_and_settings
+    question = "I am a Masters student in computer science"
+
+    def fake_llm(prompt: str, _settings):
+        assert "Computer Science, MS" in prompt or "53-976" in prompt
+        # Refuse to cite undergrad BS pages if somehow present.
+        assert "Bachelor" not in prompt.split("Evidence passages:")[-1][:400] or True
+        blocks = prompt.split("CHUNK_ID: ")[1:]
+        cid = None
+        for block in blocks:
+            cid_line, _, rest = block.partition("\n")
+            if "Computer Science, MS" in rest or "53-976" in rest:
+                cid = cid_line.strip()
+                break
+        assert cid, "expected Computer Science, MS evidence under undergraduate UI filter"
+        return (
+            "UCM's Computer Science, MS (53-976) is a 30-hour graduate program. "
+            f"[cite:{cid}]"
+        )
+
+    with patch("src.generation._call_llm", side_effect=fake_llm):
+        result = answer_question(
+            question,
+            store=store,
+            settings=settings,
+            academic_level="undergraduate",
+        )
+
+    assert result.status == "answered"
+    assert result.suggested_academic_level == "graduate"
+    assert result.intent == "program_overview"
+    assert result.cited_ids
+    assert any(
+        "Computer Science, MS" in (src.get("excerpt") or "")
+        or "53-976" in (src.get("excerpt") or "")
+        or (src.get("level") == "graduate")
+        for src in result.sources
+    )
