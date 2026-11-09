@@ -108,6 +108,8 @@ class AskResponse(BaseModel):
     error: str | None = None
     intent: str | None = None
     suggested_academic_level: Literal["undergraduate", "graduate"] | None = None
+    # Alias for clients that sync the Academic level dropdown from the response.
+    academic_level: Literal["undergraduate", "graduate"] | None = None
 
 
 class IdentityRequest(BaseModel):
@@ -219,6 +221,7 @@ def ask(body: AskRequest) -> AskResponse:
         error=result.error,
         intent=result.intent,
         suggested_academic_level=suggested,
+        academic_level=suggested,
     )
 
 

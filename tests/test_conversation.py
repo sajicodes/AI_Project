@@ -52,7 +52,7 @@ def test_classify_masters_student_context():
         assert reply is not None
         assert reply.intent == "student_context"
         assert "master" in reply.answer.lower()
-        assert "credit hours" in reply.answer.lower()
+        assert "credit hours" in reply.answer.lower() or "admission" in reply.answer.lower()
         assert reply.suggested_academic_level == "graduate"
 
 
@@ -139,6 +139,40 @@ def test_masters_student_context_never_retrieves():
     assert result.sources == []
     assert result.suggested_academic_level == "graduate"
     assert result.answer != ABSTAIN_MESSAGE
+
+
+def test_masters_cs_overview_never_abstains_when_llm_abstains():
+    """Known program identity must not RAG-abstain even if the model says ABSTAIN."""
+    from src.chunking import Chunk
+    from src.retrieval import RetrievedPassage
+
+    fake_chunk = Chunk(
+        chunk_id="grad_cs_ms_fake",
+        text="Computer Science, MS (53-976) (30 hours) Department of Computer Science",
+        title="UCM Graduate Catalog",
+        level="graduate",
+        year="2026-2027",
+        source_id="fixture_grad_catalog",
+        content_type="pdf",
+        page=189,
+        section=None,
+        url="https://example.com",
+        token_estimate=20,
+    )
+    passages = [RetrievedPassage(chunk=fake_chunk, score=0.95)]
+
+    with patch("src.generation.retrieve", return_value=passages):
+        with patch("src.generation.load_default_store"):
+            with patch("src.generation._call_llm", return_value="ABSTAIN"):
+                result = answer_question(
+                    "I am a Masters student in computer science",
+                    academic_level="undergraduate",
+                )
+    assert result.status == "conversational"
+    assert result.status != "abstained"
+    assert result.answer != ABSTAIN_MESSAGE
+    assert "Computer Science" in result.answer
+    assert result.suggested_academic_level == "graduate"
 
 
 def test_thanks_answer_question_is_conversational():

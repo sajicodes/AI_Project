@@ -96,6 +96,39 @@ def test_ask_masters_student_context_never_abstains():
     assert "master" in body["answer"].lower()
     assert body["sources"] == []
     assert body.get("suggested_academic_level") == "graduate"
+    assert body.get("academic_level") == "graduate"
+
+
+def test_ask_masters_cs_with_undergraduate_level_never_abstains():
+    """Undergraduate UI + masters CS identity must not return abstained."""
+    from unittest.mock import patch
+
+    def fake_llm(prompt: str, _settings):
+        blocks = prompt.split("CHUNK_ID: ")[1:]
+        for block in blocks:
+            cid_line, _, rest = block.partition("\n")
+            if "Computer Science, MS" in rest or "53-976" in rest:
+                return (
+                    "The Computer Science MS (53-976) is a 30-hour graduate program. "
+                    f"[cite:{cid_line.strip()}]"
+                )
+        return "ABSTAIN"
+
+    with patch("src.generation._call_llm", side_effect=fake_llm):
+        res = client.post(
+            "/v1/ask",
+            json={
+                "question": "I am a Masters student in computer science",
+                "academic_level": "undergraduate",
+                "first_name": "Alex",
+            },
+        )
+    assert res.status_code == 200
+    body = res.json()
+    assert body["status"] != "abstained"
+    assert body.get("suggested_academic_level") == "graduate"
+    assert body.get("academic_level") == "graduate"
+    assert "computer science" in body["answer"].lower() or "master" in body["answer"].lower()
 
 
 def test_identity_rejects_non_700_id():

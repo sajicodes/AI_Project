@@ -206,11 +206,13 @@ export default function AskClient() {
         academicLevel: level,
         firstName: session.firstName,
       });
-      const suggested = result.suggested_academic_level;
+      // Sync Academic level dropdown when the API returns a level from master's
+      // (or undergrad) student-context — including when the UI was set to Undergraduate.
+      const suggested = result.suggested_academic_level || result.academic_level || null;
       if (
         suggested &&
         (suggested === "graduate" || suggested === "undergraduate") &&
-        level === "all"
+        suggested !== level
       ) {
         setLevel(suggested);
         setSession(setSessionAcademicLevel(session, suggested));

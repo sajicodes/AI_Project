@@ -126,3 +126,20 @@ def test_masters_student_in_cs_retrieves_cs_ms(store_and_settings):
     assert evidence_is_sufficient(passages, min_score=settings.evidence_min_score)
     blob = " ".join(p.chunk.text for p in passages)
     assert "Computer Science, MS" in blob
+
+
+def test_masters_cs_with_undergraduate_ui_still_retrieves_grad_cs_ms(store_and_settings):
+    """Masters + CS must ignore Undergraduate UI filter and surface 53-976."""
+    store, settings = store_and_settings
+    passages = retrieve(
+        "I am a Masters student in computer science",
+        store,
+        settings=settings,
+        level="undergraduate",
+    )
+    assert passages
+    assert evidence_is_sufficient(passages, min_score=settings.evidence_min_score)
+    blob = " ".join(p.chunk.text for p in passages)
+    assert "Computer Science, MS" in blob
+    assert "53-976" in blob or "30 hours" in blob
+    assert any(p.chunk.level == "graduate" for p in passages)

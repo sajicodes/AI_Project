@@ -23,6 +23,8 @@ export type AskResponse = {
   error: string | null;
   intent: string | null;
   suggested_academic_level?: "undergraduate" | "graduate" | null;
+  /** Optional alias some API builds may return for the synced level dropdown. */
+  academic_level?: "undergraduate" | "graduate" | "all" | null;
 };
 
 export type IdentityResponse = {
