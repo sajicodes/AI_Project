@@ -9,8 +9,8 @@ from __future__ import annotations
 import re
 from dataclasses import dataclass
 
-# Reasonable UCM-style student IDs: 7–9 digits (leading zeros allowed).
-_UCM_ID_RE = re.compile(r"^\d{7,9}$")
+# UCM student IDs: nine digits starting with 700 (e.g. 700782694).
+_UCM_ID_RE = re.compile(r"^700\d{6}$")
 
 
 @dataclass(frozen=True)
@@ -50,8 +50,14 @@ def validate_ucm_id(raw: str) -> str | None:
     digits = normalize_ucm_id(raw)
     if not digits:
         return "Enter your UCM ID number."
+    if not digits.isdigit():
+        return "UCM ID should contain digits only."
+    if len(digits) != 9:
+        return "UCM ID should be 9 digits (for example, 700782694)."
+    if not digits.startswith("700"):
+        return "UCM ID should start with 700 (for example, 700782694)."
     if not _UCM_ID_RE.match(digits):
-        return "UCM ID should be 7–9 digits."
+        return "UCM ID should be 9 digits starting with 700."
     return None
 
 

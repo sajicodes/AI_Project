@@ -17,10 +17,11 @@ from src.vector_store import VectorStore
 logger = logging.getLogger(__name__)
 
 ABSTAIN_MESSAGE = (
-    "I could not verify an answer from the indexed official UCM documents "
-    "for this question. Please check the Undergraduate or Graduate Catalog, "
+    "I couldn't find this in the catalogs. "
+    "Please check the Undergraduate or Graduate Catalog, "
     "the Student Handbook, or contact the Office of the Registrar for guidance."
 )
+ABSTAIN_TITLE = "I couldn't find this in the catalogs"
 
 SYSTEM_PROMPT = """You are CampusAsk, a university policy assistant for the University of Central Missouri (UCM).
 Answer ONLY using the provided evidence passages. Rules:

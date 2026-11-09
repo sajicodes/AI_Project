@@ -72,12 +72,14 @@ function StatusLabel({ status }: { status?: string }) {
   if (status === "answered" || status === "greeting") {
     return (
       <p className={styles.statusOk}>
-        {status === "greeting" ? "Welcome" : "Grounded answer"}
+        {status === "greeting" ? "Welcome" : "From the catalogs"}
       </p>
     );
   }
   if (status === "abstained") {
-    return <p className={styles.statusAbstain}>Abstention — evidence insufficient</p>;
+    return (
+      <p className={styles.statusAbstain}>I couldn&apos;t find this in the catalogs</p>
+    );
   }
   if (status === "error") {
     return <p className={styles.statusErr}>Generation error</p>;
@@ -347,7 +349,7 @@ export default function AskClient() {
                     className={styles.input}
                     value={ucmId}
                     onChange={(e) => setUcmId(e.target.value)}
-                    placeholder="7–9 digits"
+                    placeholder="e.g. 700782694"
                     maxLength={12}
                     inputMode="numeric"
                     autoComplete="off"

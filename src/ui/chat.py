@@ -110,12 +110,12 @@ def _render_history() -> None:
             if message["role"] == "assistant" and status:
                 if status == "answered":
                     st.markdown(
-                        '<p class="status-ok">Grounded answer</p>',
+                        '<p class="status-ok">From the catalogs</p>',
                         unsafe_allow_html=True,
                     )
                 elif status == "abstained":
                     st.markdown(
-                        '<p class="status-abstain">Abstention — evidence insufficient</p>',
+                        '<p class="status-abstain">I couldn\'t find this in the catalogs</p>',
                         unsafe_allow_html=True,
                     )
                 elif status == "greeting":
@@ -227,12 +227,12 @@ def _answer_prompt(prompt: str, academic_level: str) -> None:
 
             if result.status == "answered":
                 st.markdown(
-                    '<p class="status-ok">Grounded answer</p>',
+                    '<p class="status-ok">From the catalogs</p>',
                     unsafe_allow_html=True,
                 )
             elif result.status == "abstained":
                 st.markdown(
-                    '<p class="status-abstain">Abstention — evidence insufficient</p>',
+                    '<p class="status-abstain">I couldn\'t find this in the catalogs</p>',
                     unsafe_allow_html=True,
                 )
             elif result.status == "error":
