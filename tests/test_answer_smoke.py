@@ -113,3 +113,40 @@ def test_hi_is_polite_named_greeting_not_abstention(store_and_settings):
     assert "Sajitha" in result.answer
     assert result.answer != ABSTAIN_MESSAGE
     assert not result.sources
+
+
+def test_cs_ms_program_context_yields_grounded_overview(store_and_settings):
+    store, settings = store_and_settings
+    question = "i am masters student in computer science"
+
+    def fake_llm(prompt: str, _settings):
+        import re
+
+        assert "Computer Science, MS" in prompt or "Master of Science degree in Computer Science" in prompt
+        blocks = prompt.split("CHUNK_ID: ")[1:]
+        cid = None
+        for block in blocks:
+            cid_line, _, rest = block.partition("\n")
+            if "Computer Science, MS" in rest or "Master of Science degree in Computer Science" in rest:
+                cid = cid_line.strip()
+                break
+        assert cid
+        return (
+            "The Computer Science MS (53-976) is a 30-hour graduate program "
+            f"in the Department of Computer Science and Cybersecurity. [cite:{cid}]"
+        )
+
+    with patch("src.generation._call_llm", side_effect=fake_llm):
+        result = answer_question(
+            question,
+            store=store,
+            settings=settings,
+            academic_level="all",
+        )
+
+    assert result.status == "answered"
+    assert result.intent == "program_overview"
+    assert result.suggested_academic_level == "graduate"
+    assert result.cited_ids
+    assert "30" in result.answer
+    assert "computer science" in result.answer.lower()

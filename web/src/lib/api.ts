@@ -22,6 +22,7 @@ export type AskResponse = {
   max_score: number | null;
   error: string | null;
   intent: string | null;
+  suggested_academic_level?: "undergraduate" | "graduate" | null;
 };
 
 export type IdentityResponse = {

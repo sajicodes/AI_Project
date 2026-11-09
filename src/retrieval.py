@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import re
 from dataclasses import dataclass
 
 from src.chunking import Chunk
@@ -16,6 +17,26 @@ _LEXICAL_BONUS_CAP = 0.12
 # Extra ranking help for thesis vs non-thesis Grad Catalog policy pages.
 _THESIS_PAIR_BONUS = 0.10
 _THESIS_POLICY_BONUS = 0.06
+
+# Dense retrieval often buries program-title pages under long course lists.
+# When the question clearly names a program, inject exact catalog phrase hits.
+_PROGRAM_PHRASE_RULES: list[tuple[re.Pattern[str], tuple[str, ...]]] = [
+    (
+        re.compile(
+            r"\b(?:computer\s*science|comp\s*sci|\bcs\b)\b.*\b(?:master|masters|master'?s|ms|m\.s\.?|graduate)\b|"
+            r"\b(?:master|masters|master'?s|ms|m\.s\.?|graduate)\b.*\b(?:computer\s*science|comp\s*sci|\bcs\b)\b|"
+            r"\bcomputer\s*science,\s*ms\b|"
+            r"\bms\s+in\s+computer\s*science\b|"
+            r"53-976",
+            re.IGNORECASE,
+        ),
+        (
+            "computer science, ms",
+            "master of science degree in computer science",
+            "computer science, ms (53-976)",
+        ),
+    ),
+]
 
 
 @dataclass
@@ -124,6 +145,48 @@ def _apply_thesis_boost(
     return boosted
 
 
+def _program_phrase_hits(
+    query: str,
+    store: VectorStore,
+    *,
+    level: str | None,
+    year: str | None,
+) -> list[tuple[Chunk, float]]:
+    """Exact catalog-title phrase scan for known graduate programs."""
+    q = (query or "").strip()
+    if not q:
+        return []
+    phrases: list[str] = []
+    for pattern, catalog_phrases in _PROGRAM_PHRASE_RULES:
+        if pattern.search(q):
+            phrases.extend(catalog_phrases)
+    if not phrases:
+        return []
+
+    level_l = (level or "").lower()
+    year_l = (year or "").lower()
+    scored: list[tuple[Chunk, float]] = []
+    for chunk in store.chunks:
+        if is_dev_fixture(chunk):
+            continue
+        if level_l and level_l not in {"all", ""}:
+            chunk_level = (chunk.level or "all").lower()
+            if chunk_level not in {level_l, "all", "unknown"}:
+                continue
+        if year_l and year_l not in {"all", "", "unknown"}:
+            if (chunk.year or "").lower() != year_l:
+                continue
+        text = (chunk.text or "").lower()
+        hits = sum(1 for phrase in phrases if phrase in text)
+        if not hits:
+            continue
+        # Strong enough to pass the evidence gate and outrank unrelated MS pages.
+        score = 0.88 + 0.04 * min(hits, 3)
+        scored.append((chunk, score))
+    scored.sort(key=lambda item: item[1], reverse=True)
+    return scored[:8]
+
+
 def _merge_hits(
     buckets: list[list[tuple[Chunk, float]]],
 ) -> list[tuple[Chunk, float]]:
@@ -192,6 +255,14 @@ def retrieve(
                 store.search(vector, top_k=fetch_k, level=None, year=year)
             )
         merged = _merge_hits(retry_buckets)
+
+    # Inject exact program-title phrase hits (e.g. Computer Science, MS) that
+    # dense retrieval often misses when the title is buried mid-page.
+    phrase_hits = _program_phrase_hits(
+        query, store, level=effective_level, year=year
+    )
+    if phrase_hits:
+        merged = _merge_hits([merged, phrase_hits])
 
     if not include_dev_fixtures:
         merged = [(c, s) for c, s in merged if not is_dev_fixture(c)]

@@ -107,6 +107,7 @@ class AskResponse(BaseModel):
     max_score: float | None = None
     error: str | None = None
     intent: str | None = None
+    suggested_academic_level: Literal["undergraduate", "graduate"] | None = None
 
 
 class IdentityRequest(BaseModel):
@@ -204,6 +205,10 @@ def ask(body: AskRequest) -> AskResponse:
         logger.exception("Ask failed")
         raise HTTPException(status_code=500, detail="CampusAsk ask failed.") from exc
 
+    suggested = getattr(result, "suggested_academic_level", None)
+    if suggested not in {"undergraduate", "graduate"}:
+        suggested = None
+
     return AskResponse(
         status=result.status,
         answer=result.answer,
@@ -213,6 +218,7 @@ def ask(body: AskRequest) -> AskResponse:
         max_score=result.max_score,
         error=result.error,
         intent=result.intent,
+        suggested_academic_level=suggested,
     )
 
 

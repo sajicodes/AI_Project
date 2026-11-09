@@ -98,3 +98,31 @@ def test_offtopic_fails_evidence_gate(store_and_settings):
     )
     assert not evidence_is_sufficient(passages, min_score=settings.evidence_min_score)
     assert _max_score(passages) < settings.evidence_min_score
+
+
+def test_computer_science_ms_overview_passes_evidence_gate(store_and_settings):
+    store, settings = store_and_settings
+    passages = retrieve(
+        "Computer Science, MS (53-976) 30 hours Master of Science degree in Computer Science",
+        store,
+        settings=settings,
+        level="graduate",
+    )
+    assert passages
+    assert evidence_is_sufficient(passages, min_score=settings.evidence_min_score)
+    blob = " ".join(p.chunk.text for p in passages)
+    assert "Computer Science, MS" in blob
+    assert "30 hours" in blob or "30" in blob
+
+
+def test_masters_student_in_cs_retrieves_cs_ms(store_and_settings):
+    store, settings = store_and_settings
+    passages = retrieve(
+        "i am masters student in computer science",
+        store,
+        settings=settings,
+        level=None,
+    )
+    assert evidence_is_sufficient(passages, min_score=settings.evidence_min_score)
+    blob = " ".join(p.chunk.text for p in passages)
+    assert "Computer Science, MS" in blob

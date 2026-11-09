@@ -1,10 +1,14 @@
 /** Browser-session student identity. UCM ID never leaves the browser for LLM calls. */
 
+import type { AcademicLevel } from "@/lib/api";
+
 export type StudentSession = {
   fullName: string;
   firstName: string;
   maskedId: string;
   greeted: boolean;
+  /** Optional level hint from chat (“I’m a master’s student”). */
+  academicLevel?: AcademicLevel;
 };
 
 const KEY = "campusask.student.v1";
@@ -32,6 +36,15 @@ export function clearSession(): void {
 
 export function markGreeted(session: StudentSession): StudentSession {
   const next = { ...session, greeted: true };
+  saveSession(next);
+  return next;
+}
+
+export function setSessionAcademicLevel(
+  session: StudentSession,
+  academicLevel: AcademicLevel,
+): StudentSession {
+  const next = { ...session, academicLevel };
   saveSession(next);
   return next;
 }
