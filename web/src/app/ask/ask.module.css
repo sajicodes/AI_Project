@@ -283,7 +283,7 @@
   height: auto;
 }
 
-/* Desktop topbar hidden on phone — avoids duplicate branding */
+/* Desktop topbar hidden on phone. Avoids duplicate branding. */
 .topbar {
   display: none;
 }
