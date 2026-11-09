@@ -1,0 +1,18 @@
+# Optional Render Blueprint for the CampusAsk API.
+# Prefer Railway (see railway.toml). This file is an alternate one-click path.
+services:
+  - type: web
+    name: campusask-api
+    runtime: docker
+    dockerfilePath: ./api/Dockerfile
+    plan: starter
+    healthCheckPath: /health
+    envVars:
+      - key: LLM_API_KEY
+        sync: false
+      - key: LLM_BASE_URL
+        value: https://api.groq.com/openai/v1
+      - key: LLM_MODEL
+        value: openai/gpt-oss-20b
+      - key: CORS_ORIGINS
+        sync: false

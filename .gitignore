@@ -1,7 +1,17 @@
 # Secrets and local env
 .env
 .env.local
+web/.env
+web/.env.local
 *.pem
+
+# Node / Next.js
+node_modules/
+web/node_modules/
+web/.next/
+web/out/
+web/.turbo/
+web/.vercel/
 
 # Python
 .venv/

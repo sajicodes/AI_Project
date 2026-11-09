@@ -1,0 +1,13 @@
+# Railway deploy for the CampusAsk Python API (FAISS + Groq).
+# Set root to repo root; Railway uses api/Dockerfile.
+# Required secrets: LLM_API_KEY
+# Optional: LLM_BASE_URL, LLM_MODEL, CORS_ORIGINS, TOP_K, EVIDENCE_MIN_SCORE
+
+[build]
+builder = "DOCKERFILE"
+dockerfilePath = "api/Dockerfile"
+
+[deploy]
+healthcheckPath = "/health"
+healthcheckTimeout = 120
+restartPolicyType = "ON_FAILURE"
