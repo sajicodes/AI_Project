@@ -61,3 +61,32 @@ def test_ask_greeting_never_abstains():
     assert body["intent"] == "greeting"
     assert "Hi Alex" in body["answer"]
     assert body["sources"] == []
+
+
+def test_ask_hi_how_are_you_short_circuits():
+    res = client.post(
+        "/v1/ask",
+        json={
+            "question": "Hi how are you",
+            "academic_level": "all",
+            "first_name": "Alex",
+        },
+    )
+    assert res.status_code == 200
+    body = res.json()
+    assert body["status"] == "conversational"
+    assert body["intent"] == "how_are_you"
+    assert "Alex" in body["answer"]
+    assert body["sources"] == []
+
+
+def test_identity_rejects_non_700_id():
+    res = client.post(
+        "/v1/identity/validate",
+        json={"full_name": "Alex Rivera", "ucm_id": "123456789"},
+    )
+    assert res.status_code == 200
+    body = res.json()
+    assert body["ok"] is False
+    assert "ucm_id" in body["errors"]
+    assert "700" in body["errors"]["ucm_id"]

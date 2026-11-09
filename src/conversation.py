@@ -9,6 +9,9 @@ from __future__ import annotations
 import re
 from dataclasses import dataclass
 
+# Optional greeting lead-in before how-are-you / what's-up small talk.
+_GREETING_LEAD = r"(?:(?:hi+|hello+|hey+|howdy|yo+)\s*[,!]?\s*)?"
+
 # Whole-utterance patterns — keep tight so real policy Qs still go to RAG.
 _GREETING = re.compile(
     r"^\s*("
@@ -43,10 +46,12 @@ _HELP = re.compile(
     re.IGNORECASE,
 )
 _HOWAREYOU = re.compile(
-    r"^\s*("
+    rf"^\s*{_GREETING_LEAD}("
     r"how\s+are\s+you(?:\s+doing)?|"
     r"how(?:'s|\s+is)\s+it\s+going|"
     r"what'?s\s+up|"
+    r"whats\s+up|"
+    r"sup|"
     r"how\s+do\s+you\s+do"
     r")[\s!.?]*$",
     re.IGNORECASE,
@@ -67,6 +72,9 @@ def classify_conversational_intent(text: str) -> str | None:
     # Very short emoji/punctuation-only chatter
     if re.fullmatch(r"[\W_]+", raw) and len(raw) <= 8:
         return "greeting"
+    # Prefer how-are-you before bare greeting so "Hi how are you" is never RAG.
+    if _HOWAREYOU.match(raw):
+        return "how_are_you"
     if _GREETING.match(raw):
         return "greeting"
     if _THANKS.match(raw):
@@ -75,8 +83,6 @@ def classify_conversational_intent(text: str) -> str | None:
         return "goodbye"
     if _HELP.match(raw):
         return "help"
-    if _HOWAREYOU.match(raw):
-        return "how_are_you"
     return None
 
 

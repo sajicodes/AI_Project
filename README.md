@@ -159,7 +159,7 @@ npm run dev
 
 The UI opens on a **University of Central Missouri** branded landing page. Choose **Ask CampusAsk** for grounded Q&A.
 
-**Student check-in (required):** before the first policy chat, enter **full name** and **UCM ID** (7–9 digits). Identity lives in browser `sessionStorage` only—UCM ID is never sent to the LLM or written to API logs. CampusAsk greets you by first name; the sidebar shows your name and a masked ID, with **Switch student** to reset.
+**Student check-in (required):** before the first policy chat, enter **full name** and **UCM ID** (9 digits starting with `700`, e.g. `700782694`). Identity lives in browser `sessionStorage` only—UCM ID is never sent to the LLM or written to API logs. CampusAsk greets you by first name; the sidebar shows your name and a masked ID, with **Switch student** to reset.
 
 In Ask mode, use sample question chips, filter **Undergraduate / Graduate / All**, start a **New conversation**, or return **Back to home**. Ask questions, inspect **Sources & evidence** beside answers, and expect a clear abstention when the corpus does not support an answer. Polite greetings / thanks never abstain.
 
@@ -194,13 +194,15 @@ streamlit run app.py
 
 ### 2. Web on Vercel
 
-1. Import the repo in Vercel; set **Root Directory** to `web`.
+Team: [https://vercel.com/sajithakonda0909-7027](https://vercel.com/sajithakonda0909-7027)
+
+1. **Import** `AI_Project` in that Vercel team; set **Root Directory** to `web`.
 2. Framework preset: Next.js (see `web/vercel.json`).
 3. Environment variable:
 
 | Variable | Value |
 |----------|-------|
-| `NEXT_PUBLIC_API_URL` | Railway/Render/Fly API base URL (no trailing slash) |
+| `NEXT_PUBLIC_API_URL` | API base URL (no trailing slash). For local demos the API can stay on your machine (`http://127.0.0.1:8000`); for a public UI point this at your hosted FastAPI URL. |
 
 4. Deploy. Open the landing page → **Ask CampusAsk**.
 

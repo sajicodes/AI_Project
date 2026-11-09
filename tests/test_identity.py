@@ -16,14 +16,25 @@ def test_validate_full_name():
     assert validate_full_name("  Sam  Lee  ") is None
 
 
-def test_validate_ucm_id():
+def test_validate_ucm_id_accepts_700_nine_digit():
+    assert validate_ucm_id("700782694") is None
+    assert validate_ucm_id("700012345") is None
+    assert validate_ucm_id("700-782-694") is None
+
+
+def test_validate_ucm_id_rejects_wrong_shape():
     assert validate_ucm_id("") is not None
     assert validate_ucm_id("123") is not None
     assert validate_ucm_id("abcdefg") is not None
-    assert validate_ucm_id("1234567") is None
-    assert validate_ucm_id("12-345-678") is None  # 8 digits after normalize
-    assert validate_ucm_id("700012345") is None
-    assert validate_ucm_id("1234567890") is not None  # 10 digits too long
+    assert validate_ucm_id("1234567") is not None  # not 700-prefixed / not 9
+    assert validate_ucm_id("123456789") is not None  # 9 digits but not 700*
+    assert validate_ucm_id("800782694") is not None
+    assert validate_ucm_id("70078269") is not None  # 8 digits
+    assert validate_ucm_id("7007826940") is not None  # 10 digits
+    err = validate_ucm_id("abc")
+    assert err is not None
+    assert "UCM ID" in err
+    assert validate_ucm_id("701782694") is not None  # starts 701, not 700
 
 
 def test_normalize_and_mask():
