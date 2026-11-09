@@ -102,11 +102,68 @@
 }
 
 @media (max-width: 640px) {
+  .hero {
+    min-height: 100dvh;
+    justify-content: flex-end;
+    background:
+      linear-gradient(
+        180deg,
+        rgba(30, 6, 12, 0.45) 0%,
+        rgba(61, 10, 20, 0.72) 38%,
+        rgba(30, 6, 12, 0.94) 100%
+      ),
+      url("/ucm/campus-quad.webp") center / cover no-repeat;
+  }
+
   .copy {
-    padding-bottom: 3.5rem;
+    max-width: 100%;
+    padding: 1.5rem 1.15rem calc(2.4rem + env(safe-area-inset-bottom, 0px));
+  }
+
+  .logo {
+    width: min(220px, 62vw);
+    margin-bottom: 0.85rem;
+  }
+
+  .mules {
+    font-size: 0.78rem;
+    letter-spacing: 0.12em;
   }
 
   .product {
-    font-size: clamp(2.6rem, 14vw, 3.4rem);
+    font-size: clamp(2.55rem, 13vw, 3.2rem);
+    margin-bottom: 0.45rem;
+  }
+
+  .headline {
+    max-width: none;
+    font-size: 1.02rem;
+  }
+
+  .support {
+    max-width: none;
+    font-size: 0.92rem;
+    margin-bottom: 1.25rem;
+  }
+
+  .cta {
+    width: 100%;
+    max-width: 22rem;
+    min-height: 3.15rem;
+  }
+
+  .footnote {
+    max-width: 34ch;
+    line-height: 1.4;
+  }
+}
+
+@media (max-width: 380px) {
+  .product {
+    font-size: 2.35rem;
+  }
+
+  .logo {
+    width: min(190px, 70vw);
   }
 }
